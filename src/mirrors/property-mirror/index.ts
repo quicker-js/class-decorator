@@ -6,12 +6,28 @@ import { PropertyMetadata } from '../../metadatas';
  * 成员映射
  */
 export class PropertyMirror<T = unknown> extends DeclarationMirror<T> {
+  /**
+   * classMirror
+   * 所属的ClassMirror
+   */
   public classMirror: ClassMirror;
 
+  /**
+   * target
+   * Mirror映射的目标
+   */
   public target: Object;
 
+  /**
+   * propertyKey
+   * Mirror映射的目标上的key名称
+   */
   public propertyKey: string | symbol;
 
+  /**
+   * 是否为静态成员
+   * @private
+   */
   private isStatic?: boolean;
 
   /**
@@ -68,9 +84,29 @@ export class PropertyMirror<T = unknown> extends DeclarationMirror<T> {
       Reflect.defineMetadata(
         PropertyMirror,
         propertyMirror,
-        isStatic ? target : target.constructor,
+        target,
         propertyKey
       );
     };
+  }
+
+  /**
+   * 映射元数据
+   * @param target
+   * @param propertyKey
+   * @param isStatic
+   *
+   * 该方法根据映射的目标和目标上的key名称 返回映射的PropertyMirror实例
+   */
+  public static reflect(
+    target: Function,
+    propertyKey: string | symbol,
+    isStatic = false
+  ): PropertyMirror {
+    return Reflect.getMetadata(
+      PropertyMirror,
+      isStatic ? target : target.prototype,
+      propertyKey
+    ) as PropertyMirror;
   }
 }

@@ -1,26 +1,55 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { ClassMirror } from '../class-mirror';
 import { MethodMirror } from '../method-mirror';
-import { ParameterMetadata } from '../../metadatas/parameter-metadata';
+import { ParameterMetadata } from '../../metadatas';
 
 /**
  * 参数装饰器映射
  * @class ParameterMirror
  */
 export class ParameterMirror<T = unknown> extends DeclarationMirror<T> {
+  /**
+   * methodMirror
+   * 当前参数所属MethodMirror
+   */
   public methodMirror: MethodMirror;
 
+  /**
+   * classMirror
+   * 当前参数所属ClassMirror
+   */
   public classMirror: ClassMirror;
 
+  /**
+   * target
+   * 当前参数装饰的目标
+   */
   public target: Object;
 
+  /**
+   * propertyKey
+   * 当前参数的key名称
+   */
   public propertyKey: string | symbol;
 
+  /**
+   * index
+   * 当前参数的下标
+   */
   public index: number;
 
   /**
+   * 获取当前参数的类型
+   * 如果该参数没有类型则返回undefined.
+   */
+  public getDesignParamType(): Function | undefined {
+    return this.methodMirror.getDesignParamTypes()[this.index];
+  }
+
+  /**
    * 创建装饰器
-   * @param metadata
+   * @param metadata 元数据对象
+   * 创建一个参数装饰器， metadata 必须继承至 ParameterMetadata 类.
    */
   public static createDecorator(
     metadata: ParameterMetadata
@@ -40,11 +69,10 @@ export class ParameterMirror<T = unknown> extends DeclarationMirror<T> {
         new MethodMirror();
 
       if (!methodMirror.descriptor) {
-        methodMirror.target = target;
         methodMirror.propertyKey = propertyKey;
         methodMirror.isStatic = isStatic;
         methodMirror.classMirror = classMirror;
-
+        methodMirror.target = target;
         methodMirror.descriptor = Object.getOwnPropertyDescriptor(
           target,
           propertyKey
@@ -58,6 +86,7 @@ export class ParameterMirror<T = unknown> extends DeclarationMirror<T> {
 
       // 元数据关联
       metadata.target = target;
+      metadata.classMirror = classMirror;
       metadata.methodMirror = methodMirror;
       metadata.propertyKey = propertyKey;
       metadata.index = parameterIndex;
@@ -79,12 +108,7 @@ export class ParameterMirror<T = unknown> extends DeclarationMirror<T> {
       classMirror.setMirror(propertyKey, methodMirror, isStatic);
 
       // 定义方法元数据
-      Reflect.defineMetadata(
-        MethodMirror,
-        methodMirror,
-        isStatic ? target : target.constructor,
-        propertyKey
-      );
+      Reflect.defineMetadata(MethodMirror, methodMirror, target, propertyKey);
 
       // 定义类元数据
       Reflect.defineMetadata(

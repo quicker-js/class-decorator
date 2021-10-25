@@ -1,5 +1,5 @@
 import { MethodMirror } from '../src';
-import { request } from '../src/decorators/request';
+import { request } from '../src/decorators';
 import { entity, param, property } from '../src/decorators';
 
 const name = Symbol('test');
@@ -18,7 +18,7 @@ export class SimpleUsage1 {
   @property({
     title: 'id',
   })
-  public id = 1;
+  public id: number;
 
   @property({
     title: 'name',
@@ -35,7 +35,7 @@ export class SimpleUsage1 {
     path: '/info',
     method: 'post',
   })
-  public info(): number {
+  public info(): Number {
     console.log(MethodMirror.reflect(SimpleUsage1, this.info, false));
     return 1;
   }
@@ -47,8 +47,8 @@ export class SimpleUsage1 {
     path: '/test',
     method: 'post',
   })
-  public static [name](): void {
-    return;
+  public static [name](): number {
+    return 1;
   }
 
   /**
@@ -58,8 +58,8 @@ export class SimpleUsage1 {
     path: '/getMetadataKeys',
     method: 'post',
   })
-  public static getMetadataKeys(): void {
-    return;
+  public static getMetadataKeys(): Number {
+    return 1;
   }
 
   /**
@@ -73,32 +73,30 @@ export class SimpleUsage1 {
   })
   public run(
     @param({ path: 'param.run' }) path: string,
-    @param test: string
+    @param test: number
   ): string {
-    return this.name + path + test;
+    return this.name + path + test.toString();
   }
 
   /**
    * 测试静态成员函数
    * @param path
-   * @param test
    */
   @request({
     path: '/static/run',
     method: 'get',
   })
   public static run(
-    @param({ path: '/static/param.run' }) path: string,
-    @param test: string
-  ): string {
-    return path + test;
+    @param({ path: '/static/param.run' }) path: string
+  ): boolean {
+    return true;
   }
 
   /**
    * 测试1
    * @param test
    */
-  public test1(@param test: string): void {
-    return undefined;
+  public test1(@param test: string): Number {
+    return 1;
   }
 }

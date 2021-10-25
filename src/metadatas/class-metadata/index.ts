@@ -8,5 +8,9 @@ import { ClassMirror } from '../../mirrors';
 export abstract class ClassMetadata<
   T = unknown
 > extends DeclarationMetadata<T> {
+  /**
+   * classMirror
+   * 元数据所属的ClassMirror
+   */
   public classMirror: ClassMirror;
 }

@@ -80,6 +80,8 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
    * Remove mirror
    * @param mirrorKey
    * @param isStatic
+   *
+   * 移除一个Mirror
    */
   public removeMirror(mirrorKey: string | symbol, isStatic = false): void {
     if (isStatic) {
@@ -91,9 +93,10 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
 
   /**
    * 获取 mirrors
-   * Get mirrors
-   * @param Type
-   * @param isStatic
+   * @param Type 参数可以是MethodMirror或者PropertyMirror
+   * @param isStatic 是否获取静态成员
+   *
+   * 获取指定的mirror集合，需要指定 Type，Type的参数可以是MethodMirror或者PropertyMirror.
    */
   public getMirrors<T extends ClassConstructor>(
     Type: T,
@@ -108,10 +111,11 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
 
   /**
    * 添加 mirror
-   * Add mirror
    * @param mirrorKey
    * @param mirror DeclarationMirror
    * @param isStatic 是否为静态成员
+   * 使用该方法可以添加一个Mirror 可以是 MethodMirror 也可以是 PropertyMirror，ParameterMirror不应添加至此处，ParameterMirror属于
+   * MethodMirror管理.
    */
   public setMirror<T extends MethodMirror | PropertyMirror>(
     mirrorKey: string | symbol,
@@ -128,6 +132,7 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
   /**
    * 创建类装饰器
    * @param classMetadata
+   * 使用此方法可以创建一个类装饰器 classMetadata 必须继承至 ClassMetadata类.
    */
   public static createDecorator(classMetadata: ClassMetadata): ClassDecorator {
     return (target): void => {
@@ -148,6 +153,8 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
   /**
    * 获取映射数据
    * @param type
+   *
+   * 使用此方法可以获取指定类型 type类上的 ClassMirror实例.
    */
   public static reflect<T extends Function>(type: T): ClassMirror {
     return (
