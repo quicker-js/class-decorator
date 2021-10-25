@@ -1,7 +1,6 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { ClassMirror } from '../class-mirror';
-import { ClassConstructor } from '../../interfaces';
-import { MethodMetadata } from '../../metadatas/method-metadata';
+import { MethodMetadata } from '../../metadatas';
 import { ParameterMirror } from '../parameter-mirror';
 
 /**
@@ -43,6 +42,28 @@ export class MethodMirror<
   public isStatic: boolean;
 
   /**
+   * 获取参数的类型映射
+   */
+  public getDesignParamTypes(): Function[] {
+    return Reflect.getMetadata(
+      'design:paramtypes',
+      this.target,
+      this.propertyKey
+    ) as Function[];
+  }
+
+  /**
+   * 获取返回类型
+   */
+  public getReturnType(): Function {
+    return Reflect.getMetadata(
+      'design:returntype',
+      this.target,
+      this.propertyKey
+    ) as Function;
+  }
+
+  /**
    * 创建方法装饰器
    * @param metadata
    */
@@ -61,17 +82,17 @@ export class MethodMirror<
         (classMirror.getMirror(propertyKey, isStatic) as MethodMirror) ||
         new MethodMirror();
 
+      methodMirror.isStatic = isStatic;
+      methodMirror.classMirror = classMirror;
       // 设置基本属性
       methodMirror.propertyKey = propertyKey;
       methodMirror.descriptor = descriptor;
       methodMirror.target = target.constructor;
-      methodMirror.classMirror = classMirror;
-      methodMirror.isStatic = isStatic;
 
       // metadata信息设置
       metadata.target = target;
-      metadata.propertyKey = propertyKey;
       metadata.descriptor = descriptor;
+      metadata.propertyKey = propertyKey;
 
       // 设置元数据
       methodMirror.metadata.add(metadata);

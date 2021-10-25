@@ -137,6 +137,9 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
       classMetadata.classMirror = classMirror;
       classMirror.metadata.add(classMetadata);
 
+      // 反向映射实例
+      Reflect.defineMetadata(classMetadata, classMirror, target);
+
       // 定义元数据
       Reflect.defineMetadata(ClassMirror, classMirror, target);
     };
