@@ -1,0 +1,155 @@
+import { DeclarationMirror } from '../declaration-mirror';
+import { MethodMirror } from '../method-mirror';
+import { PropertyMirror } from '../property-mirror';
+import { ClassMetadata } from '../../metadatas';
+import { ClassConstructor } from '../../interfaces';
+
+/**
+ * @class ClassMirror
+ * 类映射
+ */
+export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
+  /**
+   * mirror collection
+   */
+  public get declarations(): DeclarationMirror[] {
+    return ([] as DeclarationMirror[]).concat(
+      Array.from(this.staticMembers.values()),
+      Array.from(this.instanceMembers.values())
+    );
+  }
+
+  /**
+   * static member collection
+   */
+  public staticMembers: Map<string | symbol, MethodMirror | PropertyMirror> =
+    new Map();
+
+  /**
+   * instance member collection
+   */
+  public instanceMembers: Map<string | symbol, MethodMirror | PropertyMirror> =
+    new Map();
+
+  /**
+   * 获取静态方法映射集合
+   */
+  public getStaticMethodMirrors(): MethodMirror[] {
+    return this.getMirrors(MethodMirror, true);
+  }
+
+  /**
+   * 获取实例方法映射集合
+   */
+  public getMethodMirrors(): MethodMirror[] {
+    return this.getMirrors(MethodMirror);
+  }
+
+  /**
+   * 获取静态成员映射集合
+   */
+  public getStaticPropertiesMirrors(): PropertyMirror[] {
+    return this.getMirrors(PropertyMirror, true);
+  }
+
+  /**
+   * 获取静态成员映射集合
+   */
+  public getPropertiesMirrors(): PropertyMirror[] {
+    return this.getMirrors(PropertyMirror);
+  }
+
+  /**
+   * Get Mirror
+   * @param mirrorKey mirrorKey
+   * @param isStatic
+   */
+  public getMirror(
+    mirrorKey: string | symbol,
+    isStatic = false
+  ): MethodMirror | PropertyMirror | undefined {
+    if (isStatic) {
+      return this.staticMembers.get(mirrorKey);
+    } else {
+      return this.instanceMembers.get(mirrorKey);
+    }
+  }
+
+  /**
+   * 移除 mirror
+   * Remove mirror
+   * @param mirrorKey
+   * @param isStatic
+   */
+  public removeMirror(mirrorKey: string | symbol, isStatic = false): void {
+    if (isStatic) {
+      this.staticMembers.delete(mirrorKey);
+    } else {
+      this.instanceMembers.delete(mirrorKey);
+    }
+  }
+
+  /**
+   * 获取 mirrors
+   * Get mirrors
+   * @param Type
+   * @param isStatic
+   */
+  public getMirrors<T extends ClassConstructor>(
+    Type: T,
+    isStatic = false
+  ): InstanceType<T>[] {
+    const mirrors = isStatic ? this.staticMembers : this.instanceMembers;
+
+    return Array.from(mirrors.values()).filter(
+      (o) => o instanceof Type
+    ) as InstanceType<T>[];
+  }
+
+  /**
+   * 添加 mirror
+   * Add mirror
+   * @param mirrorKey
+   * @param mirror DeclarationMirror
+   * @param isStatic 是否为静态成员
+   */
+  public setMirror<T extends MethodMirror | PropertyMirror>(
+    mirrorKey: string | symbol,
+    mirror: T,
+    isStatic = false
+  ): void {
+    if (isStatic) {
+      this.staticMembers.set(mirrorKey, mirror);
+    } else {
+      this.instanceMembers.set(mirrorKey, mirror);
+    }
+  }
+
+  /**
+   * 创建类装饰器
+   * @param classMetadata
+   */
+  public static createDecorator(classMetadata: ClassMetadata): ClassDecorator {
+    return (target): void => {
+      // 获取已有的类映射管理器 如果没有则创建一个新的
+      const classMirror = ClassMirror.reflect(target);
+      classMetadata.target = target;
+      classMetadata.classMirror = classMirror;
+      classMirror.metadata.add(classMetadata);
+
+      // 定义元数据
+      Reflect.defineMetadata(ClassMirror, classMirror, target);
+    };
+  }
+
+  /**
+   * 获取映射数据
+   * @param type
+   */
+  public static reflect<T extends Function>(type: T): ClassMirror {
+    return (
+      (Reflect.getMetadata(ClassMirror, type) as ClassMirror) ||
+      new ClassMirror()
+    );
+  }
+}
