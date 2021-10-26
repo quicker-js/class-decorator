@@ -177,7 +177,7 @@ export interface RequestMetadataOption {
 ```
 Create custom method decorator
 
-use `MethodMirror.createDecorator` create property decorator.
+use `MethodMirror.createDecorator` create method decorator.
 ```ts
 import { RequestMetadata, RequestMetadataOption } from './request-metadata';
 import { MethodMirror } from '@quicker-js/class-decorator';
@@ -250,7 +250,7 @@ Create custom metadata file or use `ParameterMetadata`, custom metadata must use
 import { ParameterMetadata } from '@quicker-js/class-decorator';
 
 /**
- * @class Metadata
+ * @class ParamMetadata
  */
 export class ParamMetadata<T = MetadataOption> extends ParameterMetadata<T> {}
 
@@ -327,8 +327,19 @@ console.log(refectMethod2.getDesignParamTypes()); // [Object, String]
 console.log(refectMethod1.parameters); // Map<number, ParameterMirror>
 console.log(refectMethod2.parameters); // Map<number, ParameterMirror>
 
-refectMethod1.parameters.get(0) // Find 1st parameter metadata
-refectMethod1.parameters.get(0) // Find 2nd parameter metadata
+// Find 1st parameter metadata
+const parameterMirror1 = refectMethod1.parameters.get(0); // ParameterMirror<ParameterMetadata>
+// Find 2nd parameter metadata
+const parameterMirror2 = refectMethod1.parameters.get(1); // ParameterMirror<ParameterMetadata>
+// or
+ParameterMirror.reflect(Foo, 'zoo', 0, false); // ParameterMirror<ParameterMetadata>
+ParameterMirror.reflect(Foo, 'bar', 0, true); // ParameterMirror<ParameterMetadata>
+
+parameterMirror1.getDesignParamType(); // Number
+parameterMirror2.getDesignParamType(); // String
+
+parameterMirror1.metadata // Set<ParameterMetadata>
+parameterMirror2.metadata // Set<ParameterMetadata>
 ```
 
 ## Documentation

@@ -7,7 +7,9 @@ import { ParameterMetadata } from '../../metadatas';
  * 参数装饰器映射
  * @class ParameterMirror
  */
-export class ParameterMirror<T = unknown> extends DeclarationMirror<T> {
+export class ParameterMirror<
+  T extends ParameterMetadata = ParameterMetadata
+> extends DeclarationMirror<T> {
   /**
    * methodMirror
    * 当前参数所属MethodMirror

@@ -8,7 +8,9 @@ import { ClassConstructor } from '../../interfaces';
  * @class ClassMirror
  * 类映射
  */
-export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
+export class ClassMirror<
+  T extends ClassMetadata = ClassMetadata
+> extends DeclarationMirror<T> {
   /**
    * 当前ClassMirror所属的target
    */

@@ -8,7 +8,7 @@ import { ParameterMirror } from '../parameter-mirror';
  * 方法反射
  */
 export class MethodMirror<
-  T = unknown,
+  T extends MethodMetadata = MethodMetadata,
   D = unknown
 > extends DeclarationMirror<T> {
   /**

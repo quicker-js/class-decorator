@@ -5,7 +5,9 @@ import { PropertyMetadata } from '../../metadatas';
 /**
  * 成员映射
  */
-export class PropertyMirror<T = unknown> extends DeclarationMirror<T> {
+export class PropertyMirror<
+  T extends PropertyMetadata = PropertyMetadata
+> extends DeclarationMirror<T> {
   /**
    * classMirror
    * 所属的ClassMirror
