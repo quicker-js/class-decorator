@@ -4,7 +4,7 @@ import { ClassMirror, MethodMirror } from '../../mirrors';
 /**
  * @class ParameterMetadata
  */
-export class ParameterMetadata<T = unknown> extends DeclarationMetadata<T> {
+export class ParameterMetadata<T = any> extends DeclarationMetadata<T> {
   /**
    * classMirror
    * 元数据所属的 ClassMirror

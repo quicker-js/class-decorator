@@ -15,12 +15,6 @@ export class PropertyMirror<
   public classMirror: ClassMirror;
 
   /**
-   * target
-   * Mirror映射的目标
-   */
-  public target: Object;
-
-  /**
    * propertyKey
    * Mirror映射的目标上的key名称
    */

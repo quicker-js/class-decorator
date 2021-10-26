@@ -67,6 +67,7 @@
     "@typescript-eslint/no-loss-of-precision": "error",
     "@typescript-eslint/object-curly-spacing": "off",
     "@typescript-eslint/space-infix-ops": "error",
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/quotes": [
       "error",
       "single"

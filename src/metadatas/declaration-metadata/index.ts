@@ -1,7 +1,7 @@
 /**
  * 声明元数据
  */
-export abstract class DeclarationMetadata<T = unknown> {
+export abstract class DeclarationMetadata<T = any> {
   /**
    * target
    * 元数据目标

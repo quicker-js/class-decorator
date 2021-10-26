@@ -9,7 +9,7 @@ import { ParameterMirror } from '../parameter-mirror';
  */
 export class MethodMirror<
   T extends MethodMetadata = MethodMetadata,
-  D = unknown
+  D = any
 > extends DeclarationMirror<T> {
   /**
    * classMirror
@@ -28,12 +28,6 @@ export class MethodMirror<
    * 当前Mirror的所有参数ParameterMirror集合
    */
   public parameters: Map<number, ParameterMirror> = new Map();
-
-  /**
-   * target
-   * 当前Mirror映射的目标
-   */
-  public target: Object;
 
   /**
    * descriptor

@@ -23,12 +23,6 @@ export class ParameterMirror<
   public classMirror: ClassMirror;
 
   /**
-   * target
-   * 当前参数装饰的目标
-   */
-  public target: Object;
-
-  /**
    * propertyKey
    * 当前参数的key名称
    */

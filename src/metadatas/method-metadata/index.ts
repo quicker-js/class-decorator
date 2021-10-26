@@ -5,10 +5,7 @@ import { ClassMirror } from '../../mirrors';
  * @class MethodMetadata
  * 方法元数据
  */
-export class MethodMetadata<
-  T = unknown,
-  D = unknown
-> extends DeclarationMetadata<T> {
+export class MethodMetadata<T = any, D = any> extends DeclarationMetadata<T> {
   /**
    * classMirror
    * 元数据所属的ClassMirror
