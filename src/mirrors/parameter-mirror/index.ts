@@ -120,4 +120,54 @@ export class ParameterMirror<T = unknown> extends DeclarationMirror<T> {
       );
     };
   }
+
+  /**
+   * 使用函数名称查找映射数据
+   * @param type
+   * @param method
+   * @param index
+   * @param isStatic
+   *
+   *  使用此方法可以目标类上的函数所映射的ParameterMirror实例.
+   */
+  public static reflect<T extends Function>(
+    type: T,
+    method: string | symbol,
+    index: number,
+    isStatic?: boolean
+  ): ParameterMirror | undefined;
+  /**
+   * @deprecated
+   * 使用函数查找映射数据
+   * @param type
+   * @param method
+   * @param index
+   * @param isStatic
+   *
+   * 使用此方法可以目标类上的函数所映射的ParameterMirror实例.
+   */
+  public static reflect<T extends Function>(
+    type: T,
+    method: (...args: any[]) => any,
+    index: number,
+    isStatic?: boolean
+  ): ParameterMirror | undefined;
+  /**
+   * 实现方法
+   * @param type
+   * @param method
+   * @param index
+   * @param isStatic
+   */
+  public static reflect<T extends Function>(
+    type: T,
+    method: any,
+    index: number,
+    isStatic?: boolean
+  ): ParameterMirror | undefined {
+    const methodMirror = MethodMirror.reflect(type, method, isStatic);
+    if (methodMirror) {
+      return methodMirror.parameters.get(index);
+    }
+  }
 }

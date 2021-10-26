@@ -1,4 +1,4 @@
-import { ParameterMetadata } from '../../metadatas/parameter-metadata';
+import { ParameterMetadata } from '../../metadatas';
 
 /**
  * @class Metadata

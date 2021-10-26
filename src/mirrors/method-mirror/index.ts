@@ -138,6 +138,18 @@ export class MethodMirror<
   }
 
   /**
+   * 使用函数名称查找映射数据
+   * @param type
+   * @param method
+   * @param isStatic
+   */
+  public static reflect<T extends Function>(
+    type: T,
+    method: string | symbol,
+    isStatic?: boolean
+  ): MethodMirror | undefined;
+  /**
+   * @deprecated
    * 使用函数查找映射数据
    * @param type
    * @param method
@@ -148,17 +160,6 @@ export class MethodMirror<
   public static reflect<T extends Function>(
     type: T,
     method: (...args: any[]) => any,
-    isStatic?: boolean
-  ): MethodMirror | undefined;
-  /**
-   * 使用函数名称查找映射数据
-   * @param type
-   * @param method
-   * @param isStatic
-   */
-  public static reflect<T extends Function>(
-    type: T,
-    method: string | symbol,
     isStatic?: boolean
   ): MethodMirror | undefined;
   /**
