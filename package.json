@@ -1,6 +1,6 @@
 {
   "name": "@quicker-js/class-decorator",
-  "version": "0.0.1-dev.2021102503",
+  "version": "0.0.1-dev.2021102601",
   "description": "class-decorator is typescript decorator framework.",
   "main": "dist/cjs",
   "types": "dist/types",
@@ -12,6 +12,7 @@
     "build:umd": "tsc --project tsconfig.prod.umd.json",
     "build:types": "tsc --project tsconfig.prod.types.json",
     "doc": "typedoc --options ./typedoc.json",
+    "release": "yarn build:es2015 && yarn build:esm5 && yarn build:cjs && yarn build:amd && yarn build:umd && yarn build:types && yarn doc",
     "test": "mocha -w"
   },
   "repository": {

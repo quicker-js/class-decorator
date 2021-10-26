@@ -1,7 +1,7 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { MethodMirror } from '../method-mirror';
 import { PropertyMirror } from '../property-mirror';
-import { ClassMetadata } from '../../metadatas';
+import { ClassMetadata, DeclarationMetadata } from '../../metadatas';
 import { ClassConstructor } from '../../interfaces';
 
 /**
@@ -9,6 +9,11 @@ import { ClassConstructor } from '../../interfaces';
  * 类映射
  */
 export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
+  /**
+   * 当前ClassMirror所属的target
+   */
+  public target: Object;
+
   /**
    * mirror collection
    */
@@ -89,6 +94,23 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
     } else {
       this.instanceMembers.delete(mirrorKey);
     }
+  }
+
+  /**
+   * 获取元数据列表
+   * 元数据中会包含父类（超类）的元数据 此方法用于过滤掉除自己以外的元数据
+   */
+  public getSelfMetadata(): ClassMetadata[] {
+    const list: ClassMetadata[] = [];
+    this.metadata.forEach((metadata) => {
+      if (
+        metadata instanceof ClassMetadata &&
+        metadata.target === this.target
+      ) {
+        list.push(metadata);
+      }
+    });
+    return list;
   }
 
   /**
