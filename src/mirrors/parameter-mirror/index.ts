@@ -64,6 +64,8 @@ export class ParameterMirror<T = unknown> extends DeclarationMirror<T> {
         isStatic ? (target as Function) : target.constructor
       );
 
+      classMirror.target = isStatic ? target : target.constructor;
+
       const methodMirror =
         (classMirror.getMirror(propertyKey, isStatic) as MethodMirror) ||
         new MethodMirror();

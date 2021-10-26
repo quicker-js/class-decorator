@@ -160,6 +160,7 @@ export class ClassMirror<T = unknown> extends DeclarationMirror<T> {
     return (target): void => {
       // 获取已有的类映射管理器 如果没有则创建一个新的
       const classMirror = ClassMirror.reflect(target);
+      classMirror.target = target;
       classMetadata.target = target;
       classMetadata.classMirror = classMirror;
       classMirror.metadata.add(classMetadata);

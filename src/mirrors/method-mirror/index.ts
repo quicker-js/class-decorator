@@ -87,6 +87,8 @@ export class MethodMirror<
         isStatic ? (target as Function) : target.constructor
       );
 
+      classMirror.target = isStatic ? target : target.constructor;
+
       // 获取 MethodMirror
       const methodMirror =
         (classMirror.getMirror(propertyKey, isStatic) as MethodMirror) ||

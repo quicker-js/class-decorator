@@ -53,6 +53,8 @@ export class PropertyMirror<T = unknown> extends DeclarationMirror<T> {
         isStatic ? (target as Function) : target.constructor
       );
 
+      classMirror.target = isStatic ? target : target.constructor;
+
       const propertyMirror =
         (classMirror.getMirror(propertyKey, isStatic) as PropertyMirror) ||
         new PropertyMirror();
