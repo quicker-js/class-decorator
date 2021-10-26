@@ -1,7 +1,7 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { MethodMirror } from '../method-mirror';
 import { PropertyMirror } from '../property-mirror';
-import { ClassMetadata, DeclarationMetadata } from '../../metadatas';
+import { ClassMetadata } from '../../metadatas';
 import { ClassConstructor } from '../../interfaces';
 
 /**
