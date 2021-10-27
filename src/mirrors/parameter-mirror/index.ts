@@ -55,12 +55,22 @@ export class ParameterMirror<
       propertyKey: string | symbol,
       parameterIndex: number
     ): void => {
-      const isStatic: boolean = target.constructor === Function;
+      // There is no propertyKey when the parameter decorator is used on the constructor.
+      const isConstructor = !propertyKey;
+
+      if (isConstructor) {
+        propertyKey = 'constructor';
+      }
+
+      const isStatic: boolean =
+        target.constructor === Function && !isConstructor;
+
       const classMirror = ClassMirror.reflect(
-        isStatic ? (target as Function) : target.constructor
+        isStatic || isConstructor ? (target as Function) : target.constructor
       );
 
-      classMirror.target = isStatic ? target : target.constructor;
+      classMirror.target =
+        isStatic || isConstructor ? target : target.constructor;
 
       const methodMirror =
         (classMirror.getMirror(propertyKey, isStatic) as MethodMirror) ||
@@ -71,10 +81,12 @@ export class ParameterMirror<
         methodMirror.isStatic = isStatic;
         methodMirror.classMirror = classMirror;
         methodMirror.target = target;
-        methodMirror.descriptor = Object.getOwnPropertyDescriptor(
-          target,
-          propertyKey
-        );
+        if (!isConstructor) {
+          methodMirror.descriptor = Object.getOwnPropertyDescriptor(
+            target,
+            propertyKey
+          );
+        }
       }
 
       // 查找参数
@@ -106,13 +118,18 @@ export class ParameterMirror<
       classMirror.setMirror(propertyKey, methodMirror, isStatic);
 
       // 定义方法元数据
-      Reflect.defineMetadata(MethodMirror, methodMirror, target, propertyKey);
+      Reflect.defineMetadata(
+        MethodMirror,
+        methodMirror,
+        isConstructor ? (target as { prototype: object }).prototype : target,
+        propertyKey
+      );
 
       // 定义类元数据
       Reflect.defineMetadata(
         ClassMirror,
         classMirror,
-        isStatic ? target : target.constructor
+        isStatic || isConstructor ? target : target.constructor
       );
     };
   }

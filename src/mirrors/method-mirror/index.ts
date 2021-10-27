@@ -47,22 +47,35 @@ export class MethodMirror<
    * 返回数组的下标 对应ParameterMirror的index属性
    */
   public getDesignParamTypes(): Function[] {
-    return Reflect.getMetadata(
-      'design:paramtypes',
-      this.target,
-      this.propertyKey
-    ) as Function[];
+    // 兼容构造函数写法， 构造函数无 descriptor 属性
+    if (this.descriptor) {
+      return Reflect.getMetadata(
+        'design:paramtypes',
+        this.target,
+        this.propertyKey
+      ) as Function[];
+    } else {
+      return Reflect.getMetadata(
+        'design:paramtypes',
+        this.target
+      ) as Function[];
+    }
   }
 
   /**
    * 获取返回类型
    */
   public getReturnType(): Function | undefined {
-    return Reflect.getMetadata(
-      'design:returntype',
-      this.target,
-      this.propertyKey
-    ) as Function;
+    if (this.descriptor) {
+      return Reflect.getMetadata(
+        'design:returntype',
+        this.target,
+        this.propertyKey
+      ) as Function;
+    } else {
+      // 如果是构造函数 则无descriptor属性 直接返回target本身即可
+      return this.target as Function;
+    }
   }
 
   /**
