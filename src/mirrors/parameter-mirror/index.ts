@@ -8,7 +8,7 @@ import { ParameterMetadata } from '../../metadatas';
  * @class ParameterMirror
  */
 export class ParameterMirror<
-  T extends ParameterMetadata = ParameterMetadata
+  T extends ParameterMetadata = any
 > extends DeclarationMirror<T> {
   /**
    * methodMirror
@@ -76,11 +76,12 @@ export class ParameterMirror<
         (classMirror.getMirror(propertyKey, isStatic) as MethodMirror) ||
         new MethodMirror();
 
-      if (!methodMirror.descriptor) {
+      if (!methodMirror.descriptor && !methodMirror.propertyKey) {
         methodMirror.propertyKey = propertyKey;
         methodMirror.isStatic = isStatic;
         methodMirror.classMirror = classMirror;
         methodMirror.target = target;
+        methodMirror.isConstructor = isConstructor;
         if (!isConstructor) {
           methodMirror.descriptor = Object.getOwnPropertyDescriptor(
             target,

@@ -8,7 +8,7 @@ import { ParameterMirror } from '../parameter-mirror';
  * 方法反射
  */
 export class MethodMirror<
-  T extends MethodMetadata = MethodMetadata,
+  T extends MethodMetadata = any,
   D = any
 > extends DeclarationMirror<T> {
   /**
@@ -40,6 +40,12 @@ export class MethodMirror<
    * 是否为静态成员
    */
   public isStatic: boolean;
+
+  /**
+   * isConstructor
+   * 是否为构造函数
+   */
+  public isConstructor: boolean;
 
   /**
    * 获取参数的类型映射列表
@@ -107,6 +113,7 @@ export class MethodMirror<
       methodMirror.propertyKey = propertyKey;
       methodMirror.descriptor = descriptor;
       methodMirror.target = target;
+      methodMirror.isConstructor = false;
 
       // metadata信息设置
       metadata.classMirror = classMirror;

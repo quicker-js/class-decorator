@@ -9,7 +9,7 @@ import { ClassConstructor } from '../../interfaces';
  * 类映射
  */
 export class ClassMirror<
-  T extends ClassMetadata = ClassMetadata
+  T extends ClassMetadata = any
 > extends DeclarationMirror<T> {
   /**
    * mirror collection

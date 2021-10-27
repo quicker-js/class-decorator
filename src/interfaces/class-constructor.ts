@@ -1,3 +1,3 @@
-export interface ClassConstructor<T = unknown> {
+export interface ClassConstructor<T = any> {
   new (...args: any[]): T;
 }

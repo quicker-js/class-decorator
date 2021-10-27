@@ -3,9 +3,7 @@ import { DeclarationMetadata } from '../../metadatas';
 /**
  * @class DeclarationMirror
  */
-export abstract class DeclarationMirror<
-  T extends DeclarationMetadata = DeclarationMetadata
-> {
+export abstract class DeclarationMirror<T extends DeclarationMetadata = any> {
   /**
    * metadata collection
    * 元数据集合
