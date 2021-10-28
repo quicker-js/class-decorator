@@ -4,6 +4,7 @@ import { PropertyMirror } from '../property-mirror';
 import {
   ClassMetadata,
   MethodMetadata,
+  ParameterMetadata,
   PropertyMetadata,
 } from '../../metadatas';
 import { ClassConstructor } from '../../interfaces';
@@ -46,10 +47,20 @@ export class ClassMirror<
   > = new Map();
 
   /**
+   * 获取指定位置的参数装饰器反射
+   * @param index
+   */
+  public getParameter<T extends ParameterMetadata>(
+    index: number
+  ): ParameterMirror<T> {
+    return this.parameters.get(index) as ParameterMirror<T>;
+  }
+
+  /**
    * 获取构造函数参数类型
    */
-  public getDesignParamTypes(): Function[] {
-    return Reflect.getMetadata('design:paramtypes', this.target) as Function[];
+  public getDesignParamTypes<T extends Function = Function>(): T[] {
+    return Reflect.getMetadata('design:paramtypes', this.target) as T[];
   }
 
   /**
@@ -65,7 +76,7 @@ export class ClassMirror<
   /**
    * 获取实例方法映射集合
    */
-  public getMethodMirrors<T extends MethodMetadata>(): MethodMirror<T>[] {
+  public getMethodMirrors<T extends MethodMetadata = any>(): MethodMirror<T>[] {
     return this.getMirrors<ClassConstructor<MethodMirror<T>>>(MethodMirror);
   }
 
@@ -73,7 +84,7 @@ export class ClassMirror<
    * 获取静态成员映射集合
    */
   public getStaticPropertiesMirrors<
-    T extends PropertyMetadata
+    T extends PropertyMetadata = any
   >(): PropertyMirror<T>[] {
     return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(
       PropertyMirror,
@@ -85,14 +96,32 @@ export class ClassMirror<
    * 获取静态成员映射集合
    */
   public getPropertiesMirrors<
-    T extends PropertyMetadata
+    T extends PropertyMetadata = any
   >(): PropertyMirror<T>[] {
     return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(PropertyMirror);
   }
 
   /**
-   * Get Mirror
+   * Get MethodMirror
    * @param mirrorKey mirrorKey
+   * @param isStatic
+   */
+  public getMirror<T extends MethodMetadata = any>(
+    mirrorKey: string | symbol,
+    isStatic: boolean
+  ): MethodMirror<T> | undefined;
+  /**
+   * Get PropertyMirror
+   * @param mirrorKey
+   * @param isStatic
+   */
+  public getMirror<T extends PropertyMetadata = any>(
+    mirrorKey: string | symbol,
+    isStatic: boolean
+  ): PropertyMirror<T> | undefined;
+  /***
+   * 实现
+   * @param mirrorKey
    * @param isStatic
    */
   public getMirror(

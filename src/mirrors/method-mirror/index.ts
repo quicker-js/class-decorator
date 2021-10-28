@@ -87,7 +87,7 @@ export class MethodMirror<
 
       // 获取 MethodMirror
       const methodMirror =
-        (classMirror.getMirror(propertyKey, isStatic) as MethodMirror) ||
+        classMirror.getMirror<MethodMetadata>(propertyKey, isStatic) ||
         new MethodMirror();
 
       // 设置基本属性

@@ -1,7 +1,7 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { ClassMirror } from '../class-mirror';
 import { MethodMirror } from '../method-mirror';
-import { ParameterMetadata } from '../../metadatas';
+import { MethodMetadata, ParameterMetadata } from '../../metadatas';
 
 /**
  * 参数装饰器映射
@@ -97,7 +97,7 @@ export class ParameterMirror<
         isStatic || isConstructor ? target : target.constructor;
 
       const methodMirror =
-        (classMirror.getMirror(propertyKey, isStatic) as MethodMirror) ||
+        classMirror.getMirror<MethodMetadata>(propertyKey, isStatic) ||
         new MethodMirror();
 
       if (!methodMirror.descriptor && !methodMirror.propertyKey) {

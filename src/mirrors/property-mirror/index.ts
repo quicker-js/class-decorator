@@ -29,12 +29,12 @@ export class PropertyMirror<
   /**
    * 获取参数的默认类型
    */
-  public getDesignType(): Function {
+  public getDesignType<T extends Function>(): T {
     return Reflect.getMetadata(
       'design:type',
       this.target,
       this.propertyKey
-    ) as Function;
+    ) as T;
   }
 
   /**
@@ -52,7 +52,7 @@ export class PropertyMirror<
       classMirror.target = isStatic ? target : target.constructor;
 
       const propertyMirror =
-        (classMirror.getMirror(propertyKey, isStatic) as PropertyMirror) ||
+        classMirror.getMirror<PropertyMetadata>(propertyKey, isStatic) ||
         new PropertyMirror();
 
       // 映射关联

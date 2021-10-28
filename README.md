@@ -1,6 +1,7 @@
 # class-decorator
 class-decorator is typescript decorator framework.
 
+[![npm (scoped)](https://img.shields.io/npm/v/@quicker-js/class-decorator)](https://www.npmjs.com/package/@quicker-js/class-decorator)
 
 ## Installing
 
