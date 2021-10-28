@@ -5,9 +5,9 @@ class-decorator is typescript decorator framework.
 ## Installing
 
 ```shell
-npm i @quicker-js/class-decorator
+npm i reflect-metadata @quicker-js/class-decorator
 #or
-yarn add @quicker-js/class-decorator
+yarn add reflect-metadata @quicker-js/class-decorator
 ```
 
 ## Example Usage
