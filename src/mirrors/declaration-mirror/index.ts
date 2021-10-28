@@ -8,7 +8,7 @@ export abstract class DeclarationMirror<T extends DeclarationMetadata = any> {
    * metadata collection
    * 元数据集合
    */
-  public metadata: Set<T> = new Set();
+  public readonly metadata: Set<T> = new Set();
 
   /**
    * target

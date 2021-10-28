@@ -9,9 +9,11 @@ export class SimpleUsage3 extends SimpleUsage2 {
   /**
    * test
    * @param path
+   * @param index
    */
   public constructor(
-    @param({ path: '/static/param.run' }) public path: string
+    @param({ path: '/static/param.run' }) public path: string,
+    @param public index: number
   ) {
     super(path);
   }

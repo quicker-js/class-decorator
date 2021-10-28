@@ -294,6 +294,11 @@ import {Exclude} from "your decoraror path";
 import {Request} from "your decoraror path";
 
 class Foo {
+    public constructor(
+        @Param({ path: 'constructor', method: 'post' }) public path: string,
+        @Param public index: number
+    ) {}
+    
     @Request({path: '/', method: 'post'})
     public zoo(@Param test: Number, @Param({path: '/'}) path: string): string {
         return 'zoo';
@@ -340,6 +345,17 @@ parameterMirror2.getDesignParamType(); // String
 
 parameterMirror1.metadata // Set<ParameterMetadata>
 parameterMirror2.metadata // Set<ParameterMetadata>
+
+// If it is a parameter decorator of a constructor, you need to obtain metadata through the following methods
+console.log(reflectClass.parameters); // Map<number, ParameterMirror>;
+const parameterMirror3  = reflectClass.parameters.get(0) // ParameterMirror
+const parameterMirror4  = reflectClass.parameters.get(1) // ParameterMirror
+
+parameterMirror3.metadata // Set<ParameterMetadata>
+parameterMirror4.metadata // Set<ParameterMetadata>
+
+parameterMirror3.getDesignParamType(); // String
+parameterMirror4.getDesignParamType(); // Number
 ```
 
 ## Documentation

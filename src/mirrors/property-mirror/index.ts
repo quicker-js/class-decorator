@@ -43,7 +43,7 @@ export class PropertyMirror<
    */
   public static createDecorator(metadata: PropertyMetadata): PropertyDecorator {
     return (target: Object, propertyKey: string | symbol): void => {
-      const isStatic: boolean = target.constructor === Function;
+      const isStatic: boolean = ClassMirror.isStaticMember(target, propertyKey);
       // 获取已有的类映射管理器 如果没有则创建一个新的
       const classMirror = ClassMirror.reflect(
         isStatic ? (target as Function) : target.constructor

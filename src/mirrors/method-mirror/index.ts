@@ -42,46 +42,27 @@ export class MethodMirror<
   public isStatic: boolean;
 
   /**
-   * isConstructor
-   * 是否为构造函数
-   */
-  public isConstructor: boolean;
-
-  /**
    * 获取参数的类型映射列表
    * 包含该函数上的所有参数
    * 返回数组的下标 对应ParameterMirror的index属性
    */
   public getDesignParamTypes(): Function[] {
-    // 兼容构造函数写法， 构造函数无 descriptor 属性
-    if (this.descriptor) {
-      return Reflect.getMetadata(
-        'design:paramtypes',
-        this.target,
-        this.propertyKey
-      ) as Function[];
-    } else {
-      return Reflect.getMetadata(
-        'design:paramtypes',
-        this.target
-      ) as Function[];
-    }
+    return Reflect.getMetadata(
+      'design:paramtypes',
+      this.target,
+      this.propertyKey
+    ) as Function[];
   }
 
   /**
    * 获取返回类型
    */
   public getReturnType(): Function | undefined {
-    if (this.descriptor) {
-      return Reflect.getMetadata(
-        'design:returntype',
-        this.target,
-        this.propertyKey
-      ) as Function;
-    } else {
-      // 如果是构造函数 则无descriptor属性 直接返回target本身即可
-      return this.target as Function;
-    }
+    return Reflect.getMetadata(
+      'design:returntype',
+      this.target,
+      this.propertyKey
+    ) as Function;
   }
 
   /**
@@ -95,7 +76,9 @@ export class MethodMirror<
       propertyKey: string | symbol,
       descriptor: TypedPropertyDescriptor<T>
     ): TypedPropertyDescriptor<T> => {
-      const isStatic = target.constructor === Function;
+      // 是类
+      const isStatic: boolean = ClassMirror.isStaticMember(target, propertyKey);
+
       const classMirror = ClassMirror.reflect(
         isStatic ? (target as Function) : target.constructor
       );
@@ -113,7 +96,6 @@ export class MethodMirror<
       methodMirror.propertyKey = propertyKey;
       methodMirror.descriptor = descriptor;
       methodMirror.target = target;
-      methodMirror.isConstructor = false;
 
       // metadata信息设置
       metadata.classMirror = classMirror;

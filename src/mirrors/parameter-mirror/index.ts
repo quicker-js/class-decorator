@@ -13,8 +13,9 @@ export class ParameterMirror<
   /**
    * methodMirror
    * 当前参数所属MethodMirror
+   * 如果是构造函数的参数装饰器 则为null
    */
-  public methodMirror: MethodMirror;
+  public methodMirror: MethodMirror | null;
 
   /**
    * classMirror
@@ -25,8 +26,9 @@ export class ParameterMirror<
   /**
    * propertyKey
    * 当前参数的key名称
+   * 如果是构造函数的参数装饰器 则为null
    */
-  public propertyKey: string | symbol;
+  public propertyKey: string | symbol | null;
 
   /**
    * index
@@ -39,7 +41,11 @@ export class ParameterMirror<
    * 如果该参数没有类型则返回undefined.
    */
   public getDesignParamType(): Function | undefined {
-    return this.methodMirror.getDesignParamTypes()[this.index];
+    if (this.methodMirror) {
+      return this.methodMirror.getDesignParamTypes()[this.index];
+    } else {
+      return this.classMirror.getDesignParamTypes()[this.index];
+    }
   }
 
   /**
@@ -59,11 +65,29 @@ export class ParameterMirror<
       const isConstructor = !propertyKey;
 
       if (isConstructor) {
-        propertyKey = 'constructor';
+        const classMirror = ClassMirror.reflect(target as Function);
+        const parameterMirror =
+          classMirror.parameters.get(parameterIndex) || new ParameterMirror();
+
+        parameterMirror.classMirror = classMirror;
+        parameterMirror.index = parameterIndex;
+        parameterMirror.target = target;
+        parameterMirror.propertyKey = null;
+        parameterMirror.methodMirror = null;
+
+        parameterMirror.metadata.add(metadata);
+        classMirror.parameters.set(parameterIndex, parameterMirror);
+        // 定义方法元数据
+        Reflect.defineMetadata(
+          ParameterMirror,
+          parameterMirror,
+          target,
+          parameterIndex.toString()
+        );
+        return;
       }
 
-      const isStatic: boolean =
-        target.constructor === Function && !isConstructor;
+      const isStatic: boolean = ClassMirror.isStaticMember(target, propertyKey);
 
       const classMirror = ClassMirror.reflect(
         isStatic || isConstructor ? (target as Function) : target.constructor
@@ -81,13 +105,10 @@ export class ParameterMirror<
         methodMirror.isStatic = isStatic;
         methodMirror.classMirror = classMirror;
         methodMirror.target = target;
-        methodMirror.isConstructor = isConstructor;
-        if (!isConstructor) {
-          methodMirror.descriptor = Object.getOwnPropertyDescriptor(
-            target,
-            propertyKey
-          );
-        }
+        methodMirror.descriptor = Object.getOwnPropertyDescriptor(
+          target,
+          propertyKey
+        );
       }
 
       // 查找参数
@@ -119,18 +140,13 @@ export class ParameterMirror<
       classMirror.setMirror(propertyKey, methodMirror, isStatic);
 
       // 定义方法元数据
-      Reflect.defineMetadata(
-        MethodMirror,
-        methodMirror,
-        isConstructor ? (target as { prototype: object }).prototype : target,
-        propertyKey
-      );
+      Reflect.defineMetadata(MethodMirror, methodMirror, target, propertyKey);
 
       // 定义类元数据
       Reflect.defineMetadata(
         ClassMirror,
         classMirror,
-        isStatic || isConstructor ? target : target.constructor
+        isStatic ? target : target.constructor
       );
     };
   }
@@ -183,5 +199,17 @@ export class ParameterMirror<
     if (methodMirror) {
       return methodMirror.parameters.get(index);
     }
+  }
+
+  /**
+   * 映射构造函数参数
+   * @param type
+   * @param index
+   */
+  public static reflectConstructor<
+    P extends ParameterMirror,
+    T extends Function = Function
+  >(type: T, index: number): P | undefined {
+    return Reflect.getMetadata(ParameterMirror, type, index.toString()) as P;
   }
 }

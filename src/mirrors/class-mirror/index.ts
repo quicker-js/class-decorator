@@ -1,8 +1,13 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { MethodMirror } from '../method-mirror';
 import { PropertyMirror } from '../property-mirror';
-import { ClassMetadata } from '../../metadatas';
+import {
+  ClassMetadata,
+  MethodMetadata,
+  PropertyMetadata,
+} from '../../metadatas';
 import { ClassConstructor } from '../../interfaces';
+import { ParameterMirror } from '../parameter-mirror';
 
 /**
  * @class ClassMirror
@@ -11,6 +16,9 @@ import { ClassConstructor } from '../../interfaces';
 export class ClassMirror<
   T extends ClassMetadata = any
 > extends DeclarationMirror<T> {
+  // 构造函数参数
+  public parameters: Map<number, ParameterMirror> = new Map();
+
   /**
    * mirror collection
    */
@@ -24,41 +32,62 @@ export class ClassMirror<
   /**
    * static member collection
    */
-  public staticMembers: Map<string | symbol, MethodMirror | PropertyMirror> =
-    new Map();
+  public readonly staticMembers: Map<
+    string | symbol,
+    MethodMirror | PropertyMirror
+  > = new Map();
 
   /**
    * instance member collection
    */
-  public instanceMembers: Map<string | symbol, MethodMirror | PropertyMirror> =
-    new Map();
+  public readonly instanceMembers: Map<
+    string | symbol,
+    MethodMirror | PropertyMirror
+  > = new Map();
+
+  /**
+   * 获取构造函数参数类型
+   */
+  public getDesignParamTypes(): Function[] {
+    return Reflect.getMetadata('design:paramtypes', this.target) as Function[];
+  }
 
   /**
    * 获取静态方法映射集合
    */
-  public getStaticMethodMirrors(): MethodMirror[] {
-    return this.getMirrors(MethodMirror, true);
+  public getStaticMethodMirrors<T extends MethodMetadata>(): MethodMirror<T>[] {
+    return this.getMirrors<ClassConstructor<MethodMirror<T>>>(
+      MethodMirror,
+      true
+    );
   }
 
   /**
    * 获取实例方法映射集合
    */
-  public getMethodMirrors(): MethodMirror[] {
-    return this.getMirrors(MethodMirror);
+  public getMethodMirrors<T extends MethodMetadata>(): MethodMirror<T>[] {
+    return this.getMirrors<ClassConstructor<MethodMirror<T>>>(MethodMirror);
   }
 
   /**
    * 获取静态成员映射集合
    */
-  public getStaticPropertiesMirrors(): PropertyMirror[] {
-    return this.getMirrors(PropertyMirror, true);
+  public getStaticPropertiesMirrors<
+    T extends PropertyMetadata
+  >(): PropertyMirror<T>[] {
+    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(
+      PropertyMirror,
+      true
+    );
   }
 
   /**
    * 获取静态成员映射集合
    */
-  public getPropertiesMirrors(): PropertyMirror[] {
-    return this.getMirrors(PropertyMirror);
+  public getPropertiesMirrors<
+    T extends PropertyMetadata
+  >(): PropertyMirror<T>[] {
+    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(PropertyMirror);
   }
 
   /**
@@ -164,5 +193,26 @@ export class ClassMirror<
       (Reflect.getMetadata(ClassMirror, type) as ClassMirror) ||
       new ClassMirror()
     );
+  }
+
+  /**
+   * 判断target的静态成员中是否包含propertyKey
+   * @param target
+   * @param propertyKey
+   */
+  public static isStaticMember<T extends Object>(
+    target: T,
+    propertyKey: string | symbol
+  ): boolean {
+    // 如果是class constructor === Function
+    if (target.constructor === Function) {
+      return (
+        Object.getOwnPropertyNames(target).includes(propertyKey as any) ||
+        Object.getOwnPropertySymbols(target).includes(propertyKey as any)
+      );
+    } else if ((target as any).prototype) {
+      return ClassMirror.isStaticMember((target as any).prototype, propertyKey);
+    }
+    return false;
   }
 }
