@@ -13,12 +13,12 @@ yarn add reflect-metadata @quicker-js/class-decorator
 
 ## Example Usage
 
-The following examples contain basic usage methods. For more high-level usage methods, please refer to the `test` directory.
+The following examples contain basic usage methods. For more high-level usage methods, please refer to the `test` directory.    
 
-- [Create class decorator](#Create class decorator)
-- [Create property decorator](#Create property decorator)
-- [Create method decorator](#Create property decorator)
-- [Create parameter decorator](#Create parameter decorator)
+- [Create class decorator](#create-class-decorator)
+- [Create property decorator](#create-property-decorator)
+- [Create method decorator](#create-property-decorator)
+- [Create parameter decorator](#create-parameter-decorator)
 
 ### Create class decorator
 
