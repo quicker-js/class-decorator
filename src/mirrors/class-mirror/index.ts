@@ -25,6 +25,18 @@ export class ClassMirror<
   public parameters: Map<number, ParameterMirror> = new Map();
 
   /**
+   * 获取所有元数据 包含父类
+   */
+  public get allMetadata(): Set<T> {
+    if (this.parentClassMirror) {
+      const set = new Set(this.parentClassMirror.allMetadata);
+      this.metadata.forEach((o) => set.add(o));
+      return set;
+    }
+    return this.metadata;
+  }
+
+  /**
    * 父ClassMirror
    */
   public parentClassMirror: ClassMirror | null = null;
