@@ -15,6 +15,26 @@ export class PropertyMirror<
   public classMirror: ClassMirror;
 
   /**
+   * 获取所有的元数据，包含父类/基类
+   */
+  public get allMetadata(): Set<T> {
+    // 静态成员不向上查找 无继承关系
+    if (this.classMirror.parentClassMirror && !this.isStatic) {
+      const mirror = this.classMirror.parentClassMirror.getMirror<
+        PropertyMetadata<T>
+      >(this.propertyKey, this.isStatic);
+      if (mirror) {
+        const all = new Set(mirror.allMetadata);
+        this.metadata.forEach((o) => {
+          all.add(o);
+        });
+        return all as Set<T>;
+      }
+    }
+    return new Set(this.metadata);
+  }
+
+  /**
    * propertyKey
    * Mirror映射的目标上的key名称
    */
@@ -24,7 +44,7 @@ export class PropertyMirror<
    * 是否为静态成员
    * @private
    */
-  private isStatic?: boolean;
+  private isStatic: boolean;
 
   /**
    * 获取参数的默认类型
@@ -100,7 +120,7 @@ export class PropertyMirror<
     target: Function,
     propertyKey: string | symbol,
     isStatic = false
-  ): PropertyMirror {
+  ): PropertyMirror | undefined {
     return Reflect.getMetadata(
       PropertyMirror,
       isStatic ? target : target.prototype,

@@ -13,7 +13,14 @@ yarn add reflect-metadata @quicker-js/class-decorator
 
 ## Example Usage
 
-- Create class decorator
+The following examples contain basic usage methods. For more high-level usage methods, please refer to the `test` directory.
+
+- [Create class decorator](#Create class decorator)
+- [Create property decorator](#Create property decorator)
+- [Create method decorator](#Create property decorator)
+- [Create parameter decorator](#Create parameter decorator)
+
+### Create class decorator
 
 Create custom metadata file or use `ClassMetadata`, custom metadata must use the `ClassMetadata` extension.
 `entity-metadata.ts`
@@ -28,7 +35,6 @@ export interface EntityMetadataOption {
 }
 ```
 Create decorator file.
-
 ```ts
 // import class-decorator
 import { ClassMirror } from '@quicker-js/class-decorator';
@@ -76,7 +82,7 @@ console.log(reflect1.metadata) // Set<EntityMetadata>
 console.log(reflect2.metadata) // Set<EntityMetadata>
 ```
 
-- Create property decorator
+### Create property decorator
 
 Create custom metadata file or use `PropertyMetadata`, custom metadata must use the `PropertyMetadata` extension.
 `exclude-metadata.ts`
@@ -158,7 +164,7 @@ console.log(refect1.getDesignType()) // String
 console.log(refect2.getDesignType()) // Number
 ```
 
-- Create method decorator
+### Create method decorator
 
 Create custom metadata file or use `MethodMetadata`, custom metadata must use the `MethodMetadata` extension.
 `request-metadata.ts`
@@ -243,7 +249,7 @@ console.log(refectMethod1.getReturnType()); // String
 console.log(refectMethod2.getReturnType()); // Number
 ```
 
-- Create parameter decorator
+# Create parameter decorator
 
 Create custom metadata file or use `ParameterMetadata`, custom metadata must use the `ParameterMetadata` extension.
 `param-metadata.ts`

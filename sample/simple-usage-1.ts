@@ -11,9 +11,9 @@ const name = Symbol('test');
 export class SimpleUsage1 {
   /**
    * 构造函数
-   * @param option
+   * @param path
    */
-  public constructor(public option: SimpleUsage1) {}
+  public constructor(public path: string) {}
 
   @property({
     title: 'id',
@@ -21,7 +21,7 @@ export class SimpleUsage1 {
   public id: number;
 
   @property({
-    title: 'name',
+    title: 'SimpleUsage1',
   })
   public name: string;
 

@@ -1,6 +1,6 @@
 {
   "name": "@quicker-js/class-decorator",
-  "version": "0.0.1-dev.2021102804",
+  "version": "0.0.1-dev.2021103101",
   "description": "class-decorator is typescript decorator framework.",
   "main": "dist/cjs",
   "types": "dist/types",

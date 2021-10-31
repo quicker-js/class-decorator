@@ -24,6 +24,26 @@ export class MethodMirror<
   public propertyKey: string | symbol;
 
   /**
+   * 获取所有的元数据，包含父类/基类
+   */
+  public get allMetadata(): Set<T> {
+    // 静态成员不向上查找 无继承关系
+    if (this.classMirror.parentClassMirror && !this.isStatic) {
+      const mirror = this.classMirror.parentClassMirror.getMirror<
+        MethodMetadata<T>
+      >(this.propertyKey, this.isStatic);
+      if (mirror) {
+        const all = new Set(mirror.allMetadata);
+        this.metadata.forEach((o) => {
+          all.add(o);
+        });
+        return all as Set<T>;
+      }
+    }
+    return new Set(this.metadata);
+  }
+
+  /**
    * parameters
    * 当前Mirror的所有参数ParameterMirror集合
    */
@@ -145,7 +165,6 @@ export class MethodMirror<
     isStatic?: boolean
   ): MethodMirror | undefined;
   /**
-   * @deprecated
    * 使用函数查找映射数据
    * @param type
    * @param method

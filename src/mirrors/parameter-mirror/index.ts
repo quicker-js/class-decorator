@@ -66,6 +66,8 @@ export class ParameterMirror<
 
       if (isConstructor) {
         const classMirror = ClassMirror.reflect(target as Function);
+        classMirror.target = target;
+
         const parameterMirror =
           classMirror.parameters.get(parameterIndex) || new ParameterMirror();
 
@@ -77,6 +79,9 @@ export class ParameterMirror<
 
         parameterMirror.metadata.add(metadata);
         classMirror.parameters.set(parameterIndex, parameterMirror);
+
+        // 定义类元数据
+        Reflect.defineMetadata(ClassMirror, classMirror, target);
         // 定义方法元数据
         Reflect.defineMetadata(
           ParameterMirror,

@@ -2,7 +2,7 @@
  * @hide
  * 参数装饰器示例
  */
-import { ParameterMirror } from '../../mirrors/parameter-mirror';
+import { ParameterMirror } from '../../mirrors';
 import { Metadata, MetadataOption } from './metadata';
 
 /**
