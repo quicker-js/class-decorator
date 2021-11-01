@@ -128,13 +128,22 @@ export class ClassMirror<
   }
 
   /**
-   * 获取实例方法映射集合, 不包含父类（基类）.
+   * 获取实例方法映射集合.
+   * @param includeSuper 是否包含父类`MethodMirror`
    */
-  public getMethodMirrors<T extends MethodMetadata = any>(): MethodMirror<T>[] {
+  public getMethodMirrors<T extends MethodMetadata = any>(
+    includeSuper = false
+  ): MethodMirror<T>[] {
+    return this.getMirrors<ClassConstructor<MethodMirror<T>>>(
+      MethodMirror,
+      false,
+      includeSuper
+    );
     return this.getMirrors<ClassConstructor<MethodMirror<T>>>(MethodMirror);
   }
 
   /**
+   * @deprecated 请使用[ClassMirror].getMethodMirrors(true) 代替.
    * 获取成员方法，包含父类（基类）.
    */
   public getMethodMirrorsFromAll<
@@ -146,6 +155,7 @@ export class ClassMirror<
   }
 
   /**
+   * @deprecated [ClassMirror.]getStaticPropertyMirrors(true) 代替;
    * 获取静态成员映射集合, 不包含父类（基类）.
    */
   public getStaticPropertiesMirrors<
@@ -158,6 +168,23 @@ export class ClassMirror<
   }
 
   /**
+   * getStaticPropertyMirrors
+   * 获取静态成员映射集合 静态成员无继承关系，无法获取父类（基类）同属性名称装饰器的元数据
+   * Get the static member mapping collection.
+   * The static member has no inheritance relationship and
+   * cannot get the metadata of the decorator with the same attribute name of the parent class (base class).
+   */
+  public getStaticPropertyMirrors<
+    T extends PropertyMetadata = any
+  >(): PropertyMirror<T>[] {
+    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(
+      PropertyMirror,
+      true
+    );
+  }
+
+  /**
+   * @deprecated 请使用 [ClassMirror.]getPropertyMirrors(true) 代替;
    * 获取静态成员映射集合, 不包含父类（基类）.
    */
   public getPropertiesMirrors<
@@ -167,6 +194,23 @@ export class ClassMirror<
   }
 
   /**
+   * getPropertyMirrors
+   * 获取静态成员映射集合
+   * @param includeSuper 是否包含父类
+   */
+  public getPropertyMirrors<T extends PropertyMetadata = any>(
+    includeSuper = false
+  ): PropertyMirror<T>[] {
+    if (includeSuper) {
+      return this.getMirrorsFromAll<ClassConstructor<PropertyMirror<T>>>(
+        PropertyMirror
+      );
+    }
+    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(PropertyMirror);
+  }
+
+  /**
+   * @deprecated 请使用 [ClassMirror.]getPropertyMirrors(true) 代替;
    * 获取实例成员，包含父类（基类）.
    */
   public getPropertiesMirrorsFromAll<
@@ -199,10 +243,13 @@ export class ClassMirror<
    * 实现
    * @param mirrorKey
    * @param isStatic
+   * @param includeSuper 是否包含supper 父类（基类）中的Mirror.
+   * 如果从选择从父类或者基类获取相同名称的成员装饰器元数据，当前类的会优先于父类（基类），当前class会覆盖父类的同名成员的元数据.
    */
   public getMirror<T extends MethodMirror | PropertyMirror = any>(
     mirrorKey: string | symbol,
-    isStatic = false
+    isStatic = false,
+    includeSuper = false
   ): T | undefined {
     if (isStatic) {
       return this.staticMembers.get(mirrorKey) as T;
@@ -212,6 +259,7 @@ export class ClassMirror<
   }
 
   /**
+   * @deprecated 请使用 [ClassMirror].getMirror(mirrorKey, isStatic, true). 代替
    * 从所有mirror中获取mirror, 含父类（基类）中的mirror，优先获取当前类中的Mirror.
    * @param mirrorKey
    * @param isStatic
@@ -244,15 +292,16 @@ export class ClassMirror<
   }
 
   /**
-   * 获取 mirrors，不含父类（基类）中的mirror
+   * 获取所有的Mirror
    * @param Type 参数可以是MethodMirror或者PropertyMirror
    * @param isStatic 是否获取静态成员
-   *
    * 获取指定的mirror集合，需要指定 Type，Type的参数可以是MethodMirror或者PropertyMirror.
+   * @param includeSuper 是否包含基类中的Mirror
    */
   public getMirrors<T extends ClassConstructor = any>(
     Type: T,
-    isStatic = false
+    isStatic = false,
+    includeSuper = false
   ): InstanceType<T>[] {
     const mirrors = isStatic ? this.staticMembers : this.instanceMembers;
     return Array.from(mirrors.values()).filter(
@@ -261,6 +310,7 @@ export class ClassMirror<
   }
 
   /**
+   * @deprecated 请使用[ClassMirror].getMirrors(Type, isStatic, true) 代替.
    * 获取 mirrors，含父类（基类）中的mirror 优先获取当前类中的Mirror，当前类的成员覆盖父类（基类）中的成员
    * @param Type
    * @param isStatic
