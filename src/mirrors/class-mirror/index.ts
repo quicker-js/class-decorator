@@ -50,15 +50,6 @@ export class ClassMirror<
   > = new Map();
 
   /**
-   * 全部静态成员缓存
-   * @private
-   */
-  private _allStaticMembers: Map<
-    string | symbol,
-    MethodMirror | PropertyMirror
-  > | null = null;
-
-  /**
    * 全部实例成员缓存
    * @private
    */
@@ -139,32 +130,6 @@ export class ClassMirror<
       false,
       includeSuper
     );
-    return this.getMirrors<ClassConstructor<MethodMirror<T>>>(MethodMirror);
-  }
-
-  /**
-   * @deprecated 请使用[ClassMirror].getMethodMirrors(true) 代替.
-   * 获取成员方法，包含父类（基类）.
-   */
-  public getMethodMirrorsFromAll<
-    T extends MethodMetadata = any
-  >(): MethodMirror<T>[] {
-    return this.getMirrorsFromAll<ClassConstructor<MethodMirror<T>>>(
-      MethodMirror
-    );
-  }
-
-  /**
-   * @deprecated [ClassMirror.]getStaticPropertyMirrors(true) 代替;
-   * 获取静态成员映射集合, 不包含父类（基类）.
-   */
-  public getStaticPropertiesMirrors<
-    T extends PropertyMetadata = any
-  >(): PropertyMirror<T>[] {
-    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(
-      PropertyMirror,
-      true
-    );
   }
 
   /**
@@ -184,16 +149,6 @@ export class ClassMirror<
   }
 
   /**
-   * @deprecated 请使用 [ClassMirror.]getPropertyMirrors(true) 代替;
-   * 获取静态成员映射集合, 不包含父类（基类）.
-   */
-  public getPropertiesMirrors<
-    T extends PropertyMetadata = any
-  >(): PropertyMirror<T>[] {
-    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(PropertyMirror);
-  }
-
-  /**
    * getPropertyMirrors
    * 获取静态成员映射集合
    * @param includeSuper 是否包含父类
@@ -201,23 +156,10 @@ export class ClassMirror<
   public getPropertyMirrors<T extends PropertyMetadata = any>(
     includeSuper = false
   ): PropertyMirror<T>[] {
-    if (includeSuper) {
-      return this.getMirrorsFromAll<ClassConstructor<PropertyMirror<T>>>(
-        PropertyMirror
-      );
-    }
-    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(PropertyMirror);
-  }
-
-  /**
-   * @deprecated 请使用 [ClassMirror.]getPropertyMirrors(true) 代替;
-   * 获取实例成员，包含父类（基类）.
-   */
-  public getPropertiesMirrorsFromAll<
-    T extends MethodMetadata = any
-  >(): PropertyMirror<T>[] {
-    return this.getMirrorsFromAll<ClassConstructor<PropertyMirror<T>>>(
-      PropertyMirror
+    return this.getMirrors<ClassConstructor<PropertyMirror<T>>>(
+      PropertyMirror,
+      false,
+      includeSuper
     );
   }
 
@@ -259,23 +201,6 @@ export class ClassMirror<
   }
 
   /**
-   * @deprecated 请使用 [ClassMirror].getMirror(mirrorKey, isStatic, true). 代替
-   * 从所有mirror中获取mirror, 含父类（基类）中的mirror，优先获取当前类中的Mirror.
-   * @param mirrorKey
-   * @param isStatic
-   */
-  public getMirrorFromAll<T extends MethodMirror | PropertyMirror = any>(
-    mirrorKey: string | symbol,
-    isStatic: boolean
-  ): T | undefined {
-    return (
-      isStatic
-        ? this.staticMembers.get(mirrorKey)
-        : this.allInstanceMembers.get(mirrorKey)
-    ) as T;
-  }
-
-  /**
    * 移除 mirror， 不含父类（基类）中的mirror
    * Remove mirror
    * @param mirrorKey
@@ -287,6 +212,7 @@ export class ClassMirror<
     if (isStatic) {
       this.staticMembers.delete(mirrorKey);
     } else {
+      this._allInstanceMembers = null;
       this.instanceMembers.delete(mirrorKey);
     }
   }
@@ -303,43 +229,16 @@ export class ClassMirror<
     isStatic = false,
     includeSuper = false
   ): InstanceType<T>[] {
-    const mirrors = isStatic ? this.staticMembers : this.instanceMembers;
-    return Array.from(mirrors.values()).filter(
-      (o) => o instanceof Type
-    ) as InstanceType<T>[];
-  }
-
-  /**
-   * @deprecated 请使用[ClassMirror].getMirrors(Type, isStatic, true) 代替.
-   * 获取 mirrors，含父类（基类）中的mirror 优先获取当前类中的Mirror，当前类的成员覆盖父类（基类）中的成员
-   * @param Type
-   * @param isStatic
-   */
-  public getMirrorsFromAll<T extends ClassConstructor = any>(
-    Type: T,
-    isStatic = false
-  ): InstanceType<T>[] {
-    const mirrors = isStatic ? this.staticMembers : this.allInstanceMembers;
-    return Array.from(mirrors.values()).filter(
-      (o) => o instanceof Type
-    ) as InstanceType<T>[];
-  }
-
-  /**
-   * 获取所有的mirrors，含父类（基类）中的mirror
-   * @param Type
-   * @param isStatic
-   */
-  public getAllMirrors<T extends ClassConstructor>(
-    Type: T,
-    isStatic = false
-  ): InstanceType<T>[] {
-    if (this.parentClassMirror) {
-      return this.parentClassMirror
-        .getAllMirrors(Type, isStatic)
-        .concat(this.getMirrors(Type, isStatic));
-    }
-    return this.getMirrors(Type, isStatic);
+    const list = isStatic
+      ? this.staticMembers
+      : includeSuper
+      ? this.allInstanceMembers
+      : this.instanceMembers;
+    const results: InstanceType<T>[] = [];
+    list.forEach(
+      (o) => o instanceof Type && results.push(o as InstanceType<T>)
+    );
+    return results;
   }
 
   /**
@@ -358,6 +257,8 @@ export class ClassMirror<
     if (isStatic) {
       this.staticMembers.set(mirrorKey, mirror);
     } else {
+      // 清除缓存
+      this._allInstanceMembers = null;
       this.instanceMembers.set(mirrorKey, mirror);
     }
   }

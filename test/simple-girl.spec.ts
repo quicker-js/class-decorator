@@ -9,18 +9,18 @@ describe('simple-girl.spec.ts', () => {
 
   it('should match members length.', function () {
     // 获取方法成员 含父类
-    const methodMirrorsFromAll = classMirror.getMethodMirrorsFromAll();
+    const methodMirrorsFromAll = classMirror.getMethodMirrors(true);
     // 获取属性成员 含父类
-    const propertiesMirrorsFromAll = classMirror.getPropertiesMirrorsFromAll();
+    const propertiesMirrorsFromAll = classMirror.getPropertyMirrors(true);
 
     // 获取静态方法成员 不含父类
     const staticMethodMirrors = classMirror.getStaticMethodMirrors();
     // 获取静态属性成员 不含父类
-    const staticPropertiesMirrors = classMirror.getStaticPropertiesMirrors();
+    const staticPropertiesMirrors = classMirror.getStaticPropertyMirrors();
     // 实例成员方法 不含父类
     const methodMirrors = classMirror.getMethodMirrors();
     // 实例属性成员 不含父类
-    const propertiesMirrors = classMirror.getPropertiesMirrors();
+    const propertiesMirrors = classMirror.getPropertyMirrors();
 
     // 当前类 静态
     expect(staticMethodMirrors).instanceof(Array);

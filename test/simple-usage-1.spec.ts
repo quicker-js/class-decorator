@@ -10,9 +10,9 @@ describe('simple-usage-1.spec.ts', () => {
     expect(classMirror.parentClassMirror).eq(null);
 
     // 成员
-    const propertiesMirrors = classMirror.getPropertiesMirrors();
-    const staticPropertiesMirrors = classMirror.getStaticPropertiesMirrors();
-    const propertiesMirrorsFromAll = classMirror.getPropertiesMirrorsFromAll();
+    const propertiesMirrors = classMirror.getPropertyMirrors();
+    const staticPropertiesMirrors = classMirror.getStaticPropertyMirrors();
+    const propertiesMirrorsFromAll = classMirror.getPropertyMirrors(true);
 
     expect(propertiesMirrors.length).eq(2);
     expect(propertiesMirrorsFromAll.length).eq(2);
@@ -21,7 +21,7 @@ describe('simple-usage-1.spec.ts', () => {
     // 方法
     const methodMirrors = classMirror.getMethodMirrors();
     const staticMethodMirrors = classMirror.getStaticMethodMirrors();
-    const methodMirrorsFromAll = classMirror.getMethodMirrorsFromAll();
+    const methodMirrorsFromAll = classMirror.getMethodMirrors(true);
     expect(methodMirrors.length).eq(3);
     expect(staticMethodMirrors.length).eq(3);
     expect(methodMirrorsFromAll.length).eq(3);
