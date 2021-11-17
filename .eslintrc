@@ -1,7 +1,8 @@
 {
   "ignorePatterns": [
     "dist",
-    "docs"
+    "docs",
+    "*.js"
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": [

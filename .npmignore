@@ -12,6 +12,6 @@ test/
 
 .mocharc.json
 .eslintrc
-rollup.config.js
+webpack.config.js
 tsconfig.*
 typedoc.json
