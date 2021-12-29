@@ -1,6 +1,7 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { ClassMirror } from '../class-mirror';
-import { PropertyMetadata } from '../../metadatas';
+import { MethodMetadata, PropertyMetadata } from '../../metadatas';
+import { ClassConstructor } from '../../interfaces';
 
 /**
  * 成员映射
@@ -32,6 +33,16 @@ export class PropertyMirror<
       }
     }
     return new Set(this.metadata);
+  }
+
+  /**
+   * 根据类型获取元数据列表
+   * @param type
+   */
+  public getMetadataList<C extends PropertyMetadata>(
+    type: ClassConstructor<C>
+  ): T[] {
+    return Array.from(this.allMetadata).filter((o) => o instanceof type);
   }
 
   /**

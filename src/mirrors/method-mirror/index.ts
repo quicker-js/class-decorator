@@ -1,7 +1,8 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { ClassMirror } from '../class-mirror';
-import { MethodMetadata } from '../../metadatas';
+import { ClassMetadata, MethodMetadata } from '../../metadatas';
 import { ParameterMirror } from '../parameter-mirror';
+import { ClassConstructor } from '../../interfaces';
 
 /**
  * @class MethodMirror
@@ -41,6 +42,16 @@ export class MethodMirror<
       }
     }
     return new Set(this.metadata);
+  }
+
+  /**
+   * 根据类型获取元数据列表
+   * @param type
+   */
+  public getMetadataList<C extends MethodMetadata>(
+    type: ClassConstructor<C>
+  ): T[] {
+    return Array.from(this.allMetadata).filter((o) => o instanceof type);
   }
 
   /**

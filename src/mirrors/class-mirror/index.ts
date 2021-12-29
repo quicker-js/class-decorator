@@ -37,6 +37,16 @@ export class ClassMirror<
   }
 
   /**
+   * 根据类型获取元数据列表
+   * @param type
+   */
+  public getMetadataList<C extends ClassMetadata>(
+    type: ClassConstructor<C>
+  ): T[] {
+    return Array.from(this.allMetadata).filter((o) => o instanceof type);
+  }
+
+  /**
    * 父ClassMirror
    */
   public parentClassMirror: ClassMirror | null = null;
