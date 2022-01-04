@@ -41,8 +41,8 @@ export class PropertyMirror<
    */
   public getMetadata<C extends PropertyMetadata>(
     type: ClassConstructor<C>
-  ): Set<T> {
-    const metadata = new Set<T>();
+  ): Set<C> {
+    const metadata = new Set<C>();
     this.allMetadata.forEach((o) => {
       if (o instanceof type) {
         metadata.add(o);
