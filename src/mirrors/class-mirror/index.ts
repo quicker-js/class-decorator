@@ -276,7 +276,7 @@ export class ClassMirror<
   public getAllMirrors<
     T extends PropertyMirror | MethodMirror = PropertyMirror | MethodMirror
   >(type: ClassConstructor<T> | undefined, isStatic = false): T[] {
-    const currentMirrors = Array.from(this.getMirrors(type, isStatic));
+    const currentMirrors = this.getMirrors(type, isStatic);
     if (this.parentClassMirror) {
       const parentClassMirrors = this.parentClassMirror.getAllMirrors(
         type,

@@ -32,6 +32,9 @@ export class PropertyMirror<
    * @param type 类型, 参数继承至 `MethodMetadata`。
    */
   public getAllMetadata<M extends T = T>(type?: ClassConstructor<M>): M[] {
+    if (this.isStatic) {
+      return this.getMetadata(type);
+    }
     const list: M[] = [];
     this.classMirror
       .getAllMirrors<PropertyMirror<M>>(PropertyMirror)
