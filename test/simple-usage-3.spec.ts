@@ -8,6 +8,6 @@ describe('simple-usage-3.spec.ts', () => {
   const classMirror = ClassMirror.reflect(SimpleUsage3);
   it('should match members length. ', function () {
     expect(classMirror.parentClassMirror).instanceof(ClassMirror);
-    expect(classMirror.parameters.size).eq(2);
+    expect(classMirror.getParameters().size).eq(2);
   });
 });

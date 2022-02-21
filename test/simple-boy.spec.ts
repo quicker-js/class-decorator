@@ -9,36 +9,36 @@ describe('simple-boy.spec.ts', () => {
 
   it('should match members length.', function () {
     // 获取方法成员 含父类
-    const methodMirrorsFromAll = classMirror.getMethodMirrors(true);
+    const methodMirrorsFromAll = classMirror.getAllMethods();
     // 获取属性成员 含父类
-    const propertiesMirrorsFromAll = classMirror.getPropertyMirrors(true);
+    const propertiesMirrorsFromAll = classMirror.getAllProperties();
 
     // 获取静态方法成员 不含父类
-    const staticMethodMirrors = classMirror.getStaticMethodMirrors();
+    const staticMethodMirrors = classMirror.getStaticMethods();
     // 获取静态属性成员 不含父类
-    const staticPropertiesMirrors = classMirror.getStaticPropertyMirrors();
+    const staticPropertiesMirrors = classMirror.getStaticProperties();
     // 实例成员方法 不含父类
-    const methodMirrors = classMirror.getMethodMirrors();
+    const methodMirrors = classMirror.getMethods();
     // 实例属性成员 不含父类
-    const propertiesMirrors = classMirror.getPropertyMirrors();
+    const propertiesMirrors = classMirror.getProperties();
 
     // 当前类 静态
-    expect(staticMethodMirrors).instanceof(Array);
-    expect(staticMethodMirrors.length).eq(0);
-    expect(staticPropertiesMirrors).instanceof(Array);
-    expect(staticPropertiesMirrors.length).eq(0);
+    expect(staticMethodMirrors).instanceof(Map);
+    expect(staticMethodMirrors.size).eq(0);
+    expect(staticPropertiesMirrors).instanceof(Map);
+    expect(staticPropertiesMirrors.size).eq(0);
 
     // 当前类 非静态
-    expect(methodMirrors).instanceof(Array);
-    expect(methodMirrors.length).eq(0);
-    expect(propertiesMirrors).instanceof(Array);
-    expect(propertiesMirrors.length).eq(1);
+    expect(methodMirrors).instanceof(Map);
+    expect(methodMirrors.size).eq(0);
+    expect(propertiesMirrors).instanceof(Map);
+    expect(propertiesMirrors.size).eq(1);
 
     // 含父类 非静态
-    expect(methodMirrorsFromAll).instanceof(Array);
-    expect(methodMirrorsFromAll.length).eq(0);
-    expect(propertiesMirrorsFromAll).instanceof(Array);
-    expect(propertiesMirrorsFromAll.length).eq(4);
+    expect(methodMirrorsFromAll).instanceof(Map);
+    expect(methodMirrorsFromAll.size).eq(0);
+    expect(propertiesMirrorsFromAll).instanceof(Map);
+    expect(propertiesMirrorsFromAll.size).eq(4);
   });
 
   it('should has parent ClassMirror.', function () {

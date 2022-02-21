@@ -1,5 +1,6 @@
 {
   "entryPoints": ["./src/index.ts"],
   "name": "Class Decorator API",
-  "hideGenerator": true
+  "hideGenerator": true,
+  "includeVersion": true
 }
