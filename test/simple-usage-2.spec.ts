@@ -10,28 +10,28 @@ describe('simple-usage-2.spec.ts', () => {
     expect(classMirror.parentClassMirror).instanceof(ClassMirror);
 
     // 成员
-    const propertiesMirrors = classMirror.getPropertyMirrors();
-    const staticPropertiesMirrors = classMirror.getStaticPropertyMirrors();
-    const propertiesMirrorsFromAll = classMirror.getPropertyMirrors(true);
+    const propertiesMirrors = classMirror.getProperties();
+    const staticPropertiesMirrors = classMirror.getStaticProperties();
+    const propertiesMirrorsFromAll = classMirror.getAllProperties();
 
-    expect(propertiesMirrors.length).eq(3);
-    expect(propertiesMirrorsFromAll.length).eq(4);
-    expect(staticPropertiesMirrors.length).eq(0);
+    expect(propertiesMirrors.size).eq(3);
+    expect(propertiesMirrorsFromAll.size).eq(4);
+    expect(staticPropertiesMirrors.size).eq(0);
 
     // 方法
-    const methodMirrors = classMirror.getMethodMirrors();
-    const staticMethodMirrors = classMirror.getStaticMethodMirrors();
-    const methodMirrorsFromAll = classMirror.getMethodMirrors(true);
+    const methodMirrors = classMirror.getMethods();
+    const staticMethodMirrors = classMirror.getStaticMethods();
+    const methodMirrorsFromAll = classMirror.getAllMethods();
 
-    expect(methodMirrors.length).eq(1);
-    expect(staticMethodMirrors.length).eq(0);
-    expect(methodMirrorsFromAll.length).eq(3);
+    expect(methodMirrors.size).eq(1);
+    expect(staticMethodMirrors.size).eq(0);
+    expect(methodMirrorsFromAll.size).eq(3);
 
     const propertyMirror = PropertyMirror.reflect(SimpleUsage2, 'name');
 
     if (propertyMirror) {
       // 包含父类的一个装饰器 总共两个装饰器
-      expect(propertyMirror.allMetadata.size).eq(2);
+      expect(propertyMirror.getAllMetadata().length).eq(2);
       // 不包含父类 所以只有一个装饰器
       expect(propertyMirror.metadata.size).eq(1);
     }
@@ -43,8 +43,9 @@ describe('simple-usage-2.spec.ts', () => {
     if (methodMirror) {
       // 不包含父类 只有一个
       expect(methodMirror.metadata.size).eq(1);
+
       // 包含父类的装饰器 总共2个
-      expect(methodMirror.allMetadata.size).eq(2);
+      expect(methodMirror.getAllMetadata().length).eq(2);
 
       // 该函数的返回值为String
       expect(methodMirror.getReturnType()).eq(String);
@@ -63,9 +64,9 @@ describe('simple-usage-2.spec.ts', () => {
       // 此方法只有一个装饰器
       expect(methodMirror1.metadata.size).eq(1);
       // 此方法是静态方法，就算父类有相同的静态方法，allMetadata 也不会包含父类的元数据
-      expect(methodMirror1.allMetadata.size).eq(methodMirror1.metadata.size);
-      // 因为allMetadata是克隆的Set，所以metadata 和allMetadata其实是不相等的
-      expect(methodMirror1.metadata === methodMirror1.allMetadata).eq(false);
+      expect(methodMirror1.getAllMetadata().length).eq(
+        methodMirror1.metadata.size
+      );
     }
   });
 });

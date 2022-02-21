@@ -1,7 +1,7 @@
 import { DeclarationMirror } from '../declaration-mirror';
 import { ClassMirror } from '../class-mirror';
 import { MethodMirror } from '../method-mirror';
-import { MethodMetadata, ParameterMetadata } from '../../metadatas';
+import { ParameterMetadata } from '../../metadatas';
 
 /**
  * 参数装饰器映射
@@ -68,8 +68,7 @@ export class ParameterMirror<
         const classMirror = ClassMirror.reflect(target as Function);
         classMirror.target = target;
 
-        const parameterMirror =
-          classMirror.parameters.get(parameterIndex) || new ParameterMirror();
+        const parameterMirror = new ParameterMirror();
 
         parameterMirror.classMirror = classMirror;
         parameterMirror.index = parameterIndex;
@@ -78,7 +77,7 @@ export class ParameterMirror<
         parameterMirror.methodMirror = null;
 
         parameterMirror.metadata.add(metadata);
-        classMirror.parameters.set(parameterIndex, parameterMirror);
+        classMirror.setParameter(parameterIndex, parameterMirror);
 
         // 定义类元数据
         Reflect.defineMetadata(ClassMirror, classMirror, target);
@@ -102,7 +101,7 @@ export class ParameterMirror<
         isStatic || isConstructor ? target : target.constructor;
 
       const methodMirror =
-        classMirror.getMirror<MethodMetadata>(propertyKey, isStatic) ||
+        classMirror.getMirror<MethodMirror>(propertyKey, isStatic) ||
         new MethodMirror();
 
       if (!methodMirror.descriptor && !methodMirror.propertyKey) {
@@ -118,8 +117,7 @@ export class ParameterMirror<
 
       // 查找参数
       const parameterMirror =
-        (methodMirror.parameters.get(parameterIndex) as ParameterMirror) ||
-        new ParameterMirror();
+        methodMirror.getParameter(parameterIndex) || new ParameterMirror();
 
       // 元数据关联
       metadata.target = target;
@@ -139,7 +137,7 @@ export class ParameterMirror<
       parameterMirror.methodMirror = methodMirror;
 
       // 设置参数
-      methodMirror.parameters.set(parameterIndex, parameterMirror);
+      methodMirror.setParameter(parameterIndex, parameterMirror);
 
       // 设置方法映射
       classMirror.setMirror(propertyKey, methodMirror, isStatic);
@@ -202,7 +200,7 @@ export class ParameterMirror<
   ): ParameterMirror | undefined {
     const methodMirror = MethodMirror.reflect(type, method, isStatic);
     if (methodMirror) {
-      return methodMirror.parameters.get(index);
+      return methodMirror.getParameter(index);
     }
   }
 

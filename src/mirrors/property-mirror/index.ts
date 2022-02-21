@@ -16,42 +16,6 @@ export class PropertyMirror<
   public classMirror: ClassMirror;
 
   /**
-   * 获取所有的元数据，包含父类/基类
-   */
-  public get allMetadata(): Set<T> {
-    // 静态成员不向上查找 无继承关系
-    if (this.classMirror.parentClassMirror && !this.isStatic) {
-      const mirror = this.classMirror.parentClassMirror.getMirror<
-        PropertyMetadata<T>
-      >(this.propertyKey, this.isStatic);
-      if (mirror) {
-        const all = new Set(mirror.allMetadata);
-        this.metadata.forEach((o) => {
-          all.add(o);
-        });
-        return all as Set<T>;
-      }
-    }
-    return new Set(this.metadata);
-  }
-
-  /**
-   * 根据类型获取元数据列表
-   * @param type
-   */
-  public getMetadata<C extends PropertyMetadata>(
-    type: ClassConstructor<C>
-  ): Set<C> {
-    const metadata = new Set<C>();
-    this.allMetadata.forEach((o) => {
-      if (o instanceof type) {
-        metadata.add(o);
-      }
-    });
-    return metadata;
-  }
-
-  /**
    * propertyKey
    * Mirror映射的目标上的key名称
    */
@@ -62,6 +26,23 @@ export class PropertyMirror<
    * @private
    */
   private isStatic: boolean;
+
+  /**
+   * 获取所有元数据 包含父类
+   * @param type 类型, 参数继承至 `MethodMetadata`。
+   */
+  public getAllMetadata<M extends T = T>(type?: ClassConstructor<M>): M[] {
+    const list: M[] = [];
+    this.classMirror
+      .getAllMirrors<PropertyMirror<M>>(PropertyMirror)
+      .forEach((o) => {
+        if (o.propertyKey === this.propertyKey) {
+          const metadata = o.getMetadata(type);
+          list.push(...metadata);
+        }
+      });
+    return list;
+  }
 
   /**
    * 获取参数的默认类型
@@ -89,7 +70,7 @@ export class PropertyMirror<
       classMirror.target = isStatic ? target : target.constructor;
 
       const propertyMirror =
-        classMirror.getMirror<PropertyMetadata>(propertyKey, isStatic) ||
+        classMirror.getMirror<PropertyMirror>(propertyKey, isStatic) ||
         new PropertyMirror();
 
       // 映射关联
