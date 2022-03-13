@@ -13,6 +13,70 @@ export class ClassMirror<
   T extends ClassMetadata = any
 > extends DeclarationMirror<T> {
   /**
+   * 创建类装饰器
+   * @param classMetadata
+   * 使用此方法可以创建一个类装饰器 classMetadata 必须继承至 ClassMetadata类.
+   */
+  public static createDecorator(classMetadata: ClassMetadata): ClassDecorator {
+    return (target): void => {
+      // 获取已有的类映射管理器 如果没有则创建一个新的
+      const classMirror = ClassMirror.reflect(target);
+      classMirror.target = target;
+      classMetadata.target = target;
+      classMetadata.classMirror = classMirror;
+      classMirror.metadata.add(classMetadata);
+
+      // 反向映射实例
+      Reflect.defineMetadata(classMetadata, classMirror, target);
+      // 定义元数据
+      Reflect.defineMetadata(ClassMirror, classMirror, target);
+    };
+  }
+
+  /**
+   * 获取映射数据
+   * @param type
+   * 使用此方法可以获取指定类型 type类上的 ClassMirror实例.
+   */
+  public static reflect<T extends Function>(type: T): ClassMirror {
+    const metadata = Reflect.getMetadata(
+      ClassMirror,
+      type
+    ) as DeclarationMirror;
+    if (metadata instanceof ClassMirror) {
+      if (metadata.target === type) {
+        return metadata;
+      } else {
+        const classMirror = new ClassMirror();
+        classMirror.parentClassMirror = metadata;
+        return classMirror;
+      }
+    }
+    return new ClassMirror();
+  }
+
+  /**
+   * 判断target的静态成员中是否包含propertyKey
+   * @param target
+   * @param propertyKey
+   */
+  public static isStaticMember<T extends Object>(
+    target: T,
+    propertyKey: string | symbol
+  ): boolean {
+    // 如果是class constructor === Function
+    if (target.constructor === Function) {
+      return (
+        Object.getOwnPropertyNames(target).includes(propertyKey as any) ||
+        Object.getOwnPropertySymbols(target).includes(propertyKey as any)
+      );
+    } else if ((target as any).prototype) {
+      return ClassMirror.isStaticMember((target as any).prototype, propertyKey);
+    }
+    return false;
+  }
+
+  /**
    * 构造函数参数
    * 此处的`parameters.size`数量是构造函数使用了`ParameterMirror.createDecorator`创建的装饰的成员数量,
    * 要获取所有参数的数量，请使用方法 `[new ClassMirror].getDesignParamTypes`.
@@ -75,7 +139,6 @@ export class ClassMirror<
   /**
    * 获取指定位置的参数装饰器反射, 不包含父类（基类）.
    * @param index 装饰器位置
-   * @param type 参数类型
    */
   public getParameter<T extends ParameterMetadata>(
     index: number
@@ -340,69 +403,5 @@ export class ClassMirror<
     } else {
       this.instanceMembers.set(mirrorKey, mirror);
     }
-  }
-
-  /**
-   * 创建类装饰器
-   * @param classMetadata
-   * 使用此方法可以创建一个类装饰器 classMetadata 必须继承至 ClassMetadata类.
-   */
-  public static createDecorator(classMetadata: ClassMetadata): ClassDecorator {
-    return (target): void => {
-      // 获取已有的类映射管理器 如果没有则创建一个新的
-      const classMirror = ClassMirror.reflect(target);
-      classMirror.target = target;
-      classMetadata.target = target;
-      classMetadata.classMirror = classMirror;
-      classMirror.metadata.add(classMetadata);
-
-      // 反向映射实例
-      Reflect.defineMetadata(classMetadata, classMirror, target);
-      // 定义元数据
-      Reflect.defineMetadata(ClassMirror, classMirror, target);
-    };
-  }
-
-  /**
-   * 获取映射数据
-   * @param type
-   * 使用此方法可以获取指定类型 type类上的 ClassMirror实例.
-   */
-  public static reflect<T extends Function>(type: T): ClassMirror {
-    const metadata = Reflect.getMetadata(
-      ClassMirror,
-      type
-    ) as DeclarationMirror;
-    if (metadata instanceof ClassMirror) {
-      if (metadata.target === type) {
-        return metadata;
-      } else {
-        const classMirror = new ClassMirror();
-        classMirror.parentClassMirror = metadata;
-        return classMirror;
-      }
-    }
-    return new ClassMirror();
-  }
-
-  /**
-   * 判断target的静态成员中是否包含propertyKey
-   * @param target
-   * @param propertyKey
-   */
-  public static isStaticMember<T extends Object>(
-    target: T,
-    propertyKey: string | symbol
-  ): boolean {
-    // 如果是class constructor === Function
-    if (target.constructor === Function) {
-      return (
-        Object.getOwnPropertyNames(target).includes(propertyKey as any) ||
-        Object.getOwnPropertySymbols(target).includes(propertyKey as any)
-      );
-    } else if ((target as any).prototype) {
-      return ClassMirror.isStaticMember((target as any).prototype, propertyKey);
-    }
-    return false;
   }
 }

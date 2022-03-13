@@ -10,55 +10,6 @@ export class PropertyMirror<
   T extends PropertyMetadata = any
 > extends DeclarationMirror<T> {
   /**
-   * classMirror
-   * 所属的ClassMirror
-   */
-  public classMirror: ClassMirror;
-
-  /**
-   * propertyKey
-   * Mirror映射的目标上的key名称
-   */
-  public propertyKey: string | symbol;
-
-  /**
-   * 是否为静态成员
-   * @private
-   */
-  private isStatic: boolean;
-
-  /**
-   * 获取所有元数据 包含父类
-   * @param type 类型, 参数继承至 `MethodMetadata`。
-   */
-  public getAllMetadata<M extends T = T>(type?: ClassConstructor<M>): M[] {
-    if (this.isStatic) {
-      return this.getMetadata(type);
-    }
-    const list: M[] = [];
-    this.classMirror
-      .getAllMirrors<PropertyMirror<M>>(PropertyMirror)
-      .forEach((o) => {
-        if (o.propertyKey === this.propertyKey) {
-          const metadata = o.getMetadata(type);
-          list.push(...metadata);
-        }
-      });
-    return list;
-  }
-
-  /**
-   * 获取参数的默认类型
-   */
-  public getDesignType<T extends Function>(): T {
-    return Reflect.getMetadata(
-      'design:type',
-      this.target,
-      this.propertyKey
-    ) as T;
-  }
-
-  /**
    * 创建成员装饰器
    * @param metadata
    */
@@ -127,5 +78,54 @@ export class PropertyMirror<
       isStatic ? target : target.prototype,
       propertyKey
     ) as PropertyMirror;
+  }
+
+  /**
+   * classMirror
+   * 所属的ClassMirror
+   */
+  public classMirror: ClassMirror;
+
+  /**
+   * propertyKey
+   * Mirror映射的目标上的key名称
+   */
+  public propertyKey: string | symbol;
+
+  /**
+   * 是否为静态成员
+   * @private
+   */
+  private isStatic: boolean;
+
+  /**
+   * 获取所有元数据 包含父类
+   * @param type 类型, 参数继承至 `MethodMetadata`。
+   */
+  public getAllMetadata<M extends T = T>(type?: ClassConstructor<M>): M[] {
+    if (this.isStatic) {
+      return this.getMetadata(type);
+    }
+    const list: M[] = [];
+    this.classMirror
+      .getAllMirrors<PropertyMirror<M>>(PropertyMirror)
+      .forEach((o) => {
+        if (o.propertyKey === this.propertyKey) {
+          const metadata = o.getMetadata(type);
+          list.push(...metadata);
+        }
+      });
+    return list;
+  }
+
+  /**
+   * 获取参数的默认类型
+   */
+  public getDesignType<T extends Function>(): T {
+    return Reflect.getMetadata(
+      'design:type',
+      this.target,
+      this.propertyKey
+    ) as T;
   }
 }

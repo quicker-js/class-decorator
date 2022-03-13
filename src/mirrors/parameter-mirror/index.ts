@@ -11,44 +11,6 @@ export class ParameterMirror<
   T extends ParameterMetadata = any
 > extends DeclarationMirror<T> {
   /**
-   * methodMirror
-   * 当前参数所属MethodMirror
-   * 如果是构造函数的参数装饰器 则为null
-   */
-  public methodMirror: MethodMirror | null;
-
-  /**
-   * classMirror
-   * 当前参数所属ClassMirror
-   */
-  public classMirror: ClassMirror;
-
-  /**
-   * propertyKey
-   * 当前参数的key名称
-   * 如果是构造函数的参数装饰器 则为null
-   */
-  public propertyKey: string | symbol | null;
-
-  /**
-   * index
-   * 当前参数的下标
-   */
-  public index: number;
-
-  /**
-   * 获取当前参数的类型
-   * 如果该参数没有类型则返回undefined.
-   */
-  public getDesignParamType(): Function | undefined {
-    if (this.methodMirror) {
-      return this.methodMirror.getDesignParamTypes()[this.index];
-    } else {
-      return this.classMirror.getDesignParamTypes()[this.index];
-    }
-  }
-
-  /**
    * 创建装饰器
    * @param metadata 元数据对象
    * 创建一个参数装饰器， metadata 必须继承至 ParameterMetadata 类.
@@ -214,5 +176,43 @@ export class ParameterMirror<
     T extends Function = Function
   >(type: T, index: number): P | undefined {
     return Reflect.getMetadata(ParameterMirror, type, index.toString()) as P;
+  }
+
+  /**
+   * methodMirror
+   * 当前参数所属MethodMirror
+   * 如果是构造函数的参数装饰器 则为null
+   */
+  public methodMirror: MethodMirror | null;
+
+  /**
+   * classMirror
+   * 当前参数所属ClassMirror
+   */
+  public classMirror: ClassMirror;
+
+  /**
+   * propertyKey
+   * 当前参数的key名称
+   * 如果是构造函数的参数装饰器 则为null
+   */
+  public propertyKey: string | symbol | null;
+
+  /**
+   * index
+   * 当前参数的下标
+   */
+  public index: number;
+
+  /**
+   * 获取当前参数的类型
+   * 如果该参数没有类型则返回undefined.
+   */
+  public getDesignParamType(): Function | undefined {
+    if (this.methodMirror) {
+      return this.methodMirror.getDesignParamTypes()[this.index];
+    } else {
+      return this.classMirror.getDesignParamTypes()[this.index];
+    }
   }
 }

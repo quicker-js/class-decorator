@@ -13,109 +13,6 @@ export class MethodMirror<
   D = any
 > extends DeclarationMirror<T> {
   /**
-   * classMirror
-   * 当前Mirror所属的ClassMirror
-   */
-  public classMirror: ClassMirror;
-
-  /**
-   * propertyKey
-   * 当前Mirror所属target成员上的key名称
-   */
-  public propertyKey: string | symbol;
-
-  /**
-   * parameters
-   * 当前Mirror的所有参数ParameterMirror集合
-   */
-  private parameters: Map<number, ParameterMirror> = new Map();
-
-  /**
-   * descriptor
-   * 当前参数的 descriptor
-   */
-  public descriptor: D;
-
-  /**
-   * isStatic
-   * 是否为静态成员
-   */
-  public isStatic: boolean;
-
-  /**
-   * 获取所有元数据 包含父类
-   * @param type 类型, 参数继承至 `MethodMetadata`。
-   */
-  public getAllMetadata<M extends T = T>(type?: ClassConstructor<M>): M[] {
-    if (this.isStatic) {
-      return this.getMetadata(type);
-    }
-    const list: M[] = [];
-    this.classMirror
-      .getAllMirrors<MethodMirror<M>>(MethodMirror)
-      .forEach((o) => {
-        if (o.propertyKey === this.propertyKey) {
-          const metadata = o.getMetadata(type);
-          list.push(...metadata);
-        }
-      });
-    return list;
-  }
-
-  /**
-   * 获取所有参数装饰器
-   */
-  public getParameters(): Map<number, ParameterMirror> {
-    return new Map(this.parameters.entries());
-  }
-
-  /**
-   * 获取指定位置的参数装饰器反射, 不包含父类（基类）.
-   * @param index 装饰器位置
-   */
-  public getParameter<T extends ParameterMetadata = ParameterMetadata>(
-    index: number
-  ): ParameterMirror<T> {
-    return this.parameters.get(index) as ParameterMirror<T>;
-  }
-
-  /**
-   * 设置指定位置的参数装饰器反射, 不包含父类（基类）.
-   * @param index
-   * @param mirror
-   */
-  public setParameter<T extends ParameterMirror>(
-    index: number,
-    mirror: T
-  ): Map<number, ParameterMirror> {
-    return this.parameters.set(index, mirror);
-  }
-
-  /**
-   * 获取参数的类型映射列表
-   * 包含该函数上的所有参数
-   * 返回数组的下标 对应ParameterMirror的index属性
-   */
-  public getDesignParamTypes(): Function[] {
-    return Reflect.getMetadata(
-      'design:paramtypes',
-      this.target,
-      this.propertyKey
-    ) as Function[];
-  }
-
-  /**
-   * 获取返回类型
-   */
-  public getReturnType(): Function | undefined {
-    return Reflect.getMetadata(
-      'design:returntype',
-      this.target,
-      this.propertyKey
-    ) as Function;
-  }
-
-  /**
    * 创建方法装饰器
    * @param metadata
    * 使用此方法可以创建一个成员方法装饰器, metadata 必须继承至MethodMetadata对象
@@ -230,5 +127,108 @@ export class MethodMirror<
       method,
       isStatic ? type : type.prototype
     ) as MethodMirror;
+  }
+
+  /**
+   * classMirror
+   * 当前Mirror所属的ClassMirror
+   */
+  public classMirror: ClassMirror;
+
+  /**
+   * propertyKey
+   * 当前Mirror所属target成员上的key名称
+   */
+  public propertyKey: string | symbol;
+
+  /**
+   * parameters
+   * 当前Mirror的所有参数ParameterMirror集合
+   */
+  private parameters: Map<number, ParameterMirror> = new Map();
+
+  /**
+   * descriptor
+   * 当前参数的 descriptor
+   */
+  public descriptor: D;
+
+  /**
+   * isStatic
+   * 是否为静态成员
+   */
+  public isStatic: boolean;
+
+  /**
+   * 获取所有元数据 包含父类
+   * @param type 类型, 参数继承至 `MethodMetadata`。
+   */
+  public getAllMetadata<M extends T = T>(type?: ClassConstructor<M>): M[] {
+    if (this.isStatic) {
+      return this.getMetadata(type);
+    }
+    const list: M[] = [];
+    this.classMirror
+      .getAllMirrors<MethodMirror<M>>(MethodMirror)
+      .forEach((o) => {
+        if (o.propertyKey === this.propertyKey) {
+          const metadata = o.getMetadata(type);
+          list.push(...metadata);
+        }
+      });
+    return list;
+  }
+
+  /**
+   * 获取所有参数装饰器
+   */
+  public getParameters(): Map<number, ParameterMirror> {
+    return new Map(this.parameters.entries());
+  }
+
+  /**
+   * 获取指定位置的参数装饰器反射, 不包含父类（基类）.
+   * @param index 装饰器位置
+   */
+  public getParameter<T extends ParameterMetadata = ParameterMetadata>(
+    index: number
+  ): ParameterMirror<T> {
+    return this.parameters.get(index) as ParameterMirror<T>;
+  }
+
+  /**
+   * 设置指定位置的参数装饰器反射, 不包含父类（基类）.
+   * @param index
+   * @param mirror
+   */
+  public setParameter<T extends ParameterMirror>(
+    index: number,
+    mirror: T
+  ): Map<number, ParameterMirror> {
+    return this.parameters.set(index, mirror);
+  }
+
+  /**
+   * 获取参数的类型映射列表
+   * 包含该函数上的所有参数
+   * 返回数组的下标 对应ParameterMirror的index属性
+   */
+  public getDesignParamTypes(): Function[] {
+    return Reflect.getMetadata(
+      'design:paramtypes',
+      this.target,
+      this.propertyKey
+    ) as Function[];
+  }
+
+  /**
+   * 获取返回类型
+   */
+  public getReturnType(): Function | undefined {
+    return Reflect.getMetadata(
+      'design:returntype',
+      this.target,
+      this.propertyKey
+    ) as Function;
   }
 }
